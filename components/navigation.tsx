@@ -10,11 +10,11 @@ import { Badge } from "@/components/ui/badge"
 
 const routes = [
   { icon: Home, label: "Home", href: "/home" },
-  { icon: Calendar, label: "Events", href: "/events" },
+  { icon: Calendar, label: "Event", href: "/events" },
   { icon: Search, label: "Search", href: "/search", isSearchTrigger: true },
   { icon: PenSquare, label: "Create", href: "/create" },
-  { icon: Bell, label: "Notifications", href: "/notifications" },
-  { icon: User, label: "Profile", href: "/profile" },
+  // { icon: Bell, label: "Notifications", href: "/notifications" },
+  // { icon: User, label: "Profile", href: "/profile" },
 ]
 
 export function MobileNavigation() {
@@ -76,9 +76,9 @@ export function DesktopSidebar() {
 
   return (
     <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col border-r bg-card">
-      <div className="flex h-16 items-center gap-2 border-b px-6">
+      <div className="flex h-14 items-center gap-2 border-b px-6">
         <Code2 className="h-6 w-6 text-primary" />
-        <span className="font-mono text-lg font-semibold">DevShare</span>
+        <span className="font-mono text-lg font-semibold">Dev Share Forum</span>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
