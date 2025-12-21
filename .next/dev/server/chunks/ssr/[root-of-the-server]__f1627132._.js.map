@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["file:///D:/saves/Fullstack/Project/dev-share-lite-fe/app/page.tsx"],"sourcesContent":["import { Header } from \"./header\";\r\nimport { Hero } from \"./hero\";\r\nimport { FeaturesSection } from \"./features-section\";\r\nimport { AIDemoSection } from \"./ai-demo-section\";\r\nimport { CTASection } from \"./cta-section\";\r\nimport { Footer } from \"./footer\";\r\n\r\nexport default function LandingPage() {\r\n  return (\r\n    <div className=\"min-h-screen\">\r\n      <Header />\r\n      <main>\r\n        <Hero />\r\n        <FeaturesSection />\r\n        <AIDemoSection />\r\n        <CTASection />\r\n      </main>\r\n      <Footer />\r\n    </div>\r\n  );\r\n}"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAOe,SAAS;IACtB,qBACE,8WAAC;QAAI,WAAU;;0BACb,8WAAC;;;;;0BACD,8WAAC;;kCACC,8WAAC;;;;;kCACD,8WAAC;;;;;kCACD,8WAAC;;;;;kCACD,8WAAC;;;;;;;;;;;0BAEH,8WAAC;;;;;;;;;;;AAGP"}}]
+}

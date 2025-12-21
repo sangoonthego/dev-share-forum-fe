@@ -1,0 +1,9 @@
+{
+  "/ai-demo/page": "app/ai-demo/page.js",
+  "/create/page": "app/create/page.js",
+  "/events/page": "app/events/page.js",
+  "/home/page": "app/home/page.js",
+  "/notifications/page": "app/notifications/page.js",
+  "/page": "app/page.js",
+  "/profile/page": "app/profile/page.js"
+}

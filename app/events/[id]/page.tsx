@@ -63,6 +63,7 @@ export default function EventDetailPage() {
     isFree: true,
     attendeeCount: 127,
     capacity: 150,
+    price: 0,
     hasCapacity: true,
     requiresApproval: false,
     host: {
