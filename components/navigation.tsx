@@ -2,13 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Search, PenSquare, Bell, User, Code2 } from "lucide-react"
+import { Home, Search, PenSquare, Bell, User, Code2, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 
 const routes = [
   { icon: Home, label: "Home", href: "/home" },
+  { icon: Calendar, label: "Events", href: "/events" },
   { icon: Search, label: "Search", href: "/search", isSearchTrigger: true },
   { icon: PenSquare, label: "Create", href: "/create" },
   { icon: Bell, label: "Notifications", href: "/notifications" },
