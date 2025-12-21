@@ -1,5 +1,5 @@
 import { Sparkles } from "lucide-react";
-import { AIAgentDemo } from "@/components/ai-agent-demo";
+import { AIAgentDemo } from "@/components/agentic/ai-agent-demo";
 
 export function AIDemoSection() {
   return (

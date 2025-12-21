@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/app-layout"
 import { PostFeed } from "@/components/post/post-feed"
-import { TrendingSidebar } from "@/components/trending-sidebar"
+import { TrendingSidebar } from "@/components/layout/trending-sidebar"
 import { SearchOverlay } from "@/components/search/search-overlay"
 import { Suspense } from "react"
 import { PostCardSkeleton } from "@/components/post/post-card"
@@ -9,7 +9,7 @@ import { DailyCuratorBanner } from "@/components/banner/daily-curator-banner"
 export default function HomePage() {
   return (
     <AppLayout>
-      <div className="min-h-screen">
+      <div className="min-h-screen p-7">
         {/* Main content area with 3-column layout on desktop */}
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-6 py-6 lg:grid-cols-12">
