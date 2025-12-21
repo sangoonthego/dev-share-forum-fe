@@ -1,7 +1,7 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PostCard } from "@/components/post-card"
+import { PostCard } from "@/components/post/post-card"
 import { Card } from "@/components/ui/card"
 import { FileText, BookMarked, FileEdit } from "lucide-react"
 

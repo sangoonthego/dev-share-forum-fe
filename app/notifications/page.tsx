@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/app-layout"
+import { AppLayout } from "@/components/layout/app-layout"
 import { NotificationsList } from "@/components/notifications-list"
 
 export default function NotificationsPage() {

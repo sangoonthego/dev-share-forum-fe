@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, TrendingUp } from "lucide-react"
-import { PostCard } from "@/components/post-card"
+import { PostCard } from "@/components/post/post-card"
 
 const TRENDING_TAGS = ["Next.js", "React", "TypeScript", "WebSockets", "AI", "Performance", "Security", "UI/UX"]
 

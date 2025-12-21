@@ -1,12 +1,12 @@
-import { AppLayout } from "@/components/app-layout"
+import { AppLayout } from "@/components/layout/app-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Bot, Sparkles, Users, Shield, TrendingUp, Archive } from "lucide-react"
-import { ExpertMatchingBanner } from "@/components/expert-matching-banner"
+import { ExpertMatchingBanner } from "@/components/banner/expert-matching-banner"
 import { ModerationAlert } from "@/components/moderation-alert"
 import { CommunityHealthMonitor } from "@/components/community-health-monitor"
-import { DailyCuratorBanner } from "@/components/daily-curator-banner"
-import { LegacyContentBanner } from "@/components/legacy-content-banner"
+import { DailyCuratorBanner } from "@/components/banner/daily-curator-banner"
+import { LegacyContentBanner } from "@/components/banner/legacy-content-banner"
 
 export default function AIDemoPage() {
   return (

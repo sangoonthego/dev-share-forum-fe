@@ -1,10 +1,10 @@
-import { AppLayout } from "@/components/app-layout"
-import { PostDetail } from "@/components/post-detail"
+import { AppLayout } from "@/components/layout/app-layout"
+import { PostDetail } from "@/components/post/post-detail"
 import { CommentSection } from "@/components/comment-section"
-import { RelatedPosts } from "@/components/related-posts"
-import { ExpertMatchingBanner } from "@/components/expert-matching-banner"
+import { RelatedPosts } from "@/components/post/related-posts"
+import { ExpertMatchingBanner } from "@/components/banner/expert-matching-banner"
 import { CommunityHealthMonitor } from "@/components/community-health-monitor"
-import { LegacyContentBanner } from "@/components/legacy-content-banner"
+import { LegacyContentBanner } from "@/components/banner/legacy-content-banner"
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   return (
