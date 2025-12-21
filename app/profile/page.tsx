@@ -13,7 +13,6 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("posts");
   const [mounted, setMounted] = useState(false);
 
-  // Đảm bảo code chỉ chạy trên trình duyệt mới render dữ liệu ngẫu nhiên
   useEffect(() => {
     setMounted(true);
   }, []);
