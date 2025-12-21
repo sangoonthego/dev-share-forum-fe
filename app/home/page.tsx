@@ -4,6 +4,7 @@ import { TrendingSidebar } from "@/components/trending-sidebar"
 import { SearchOverlay } from "@/components/search-overlay"
 import { Suspense } from "react"
 import { PostCardSkeleton } from "@/components/post-card"
+import { DailyCuratorBanner } from "@/components/daily-curator-banner"
 
 export default function HomePage() {
   return (
@@ -14,6 +15,10 @@ export default function HomePage() {
           <div className="grid grid-cols-1 gap-6 py-6 lg:grid-cols-12">
             {/* Main Feed - Mobile: full width, Desktop: 8 columns */}
             <div className="lg:col-span-8">
+              <div className="mb-6">
+                <DailyCuratorBanner />
+              </div>
+
               <Suspense
                 fallback={
                   <div className="space-y-4">
