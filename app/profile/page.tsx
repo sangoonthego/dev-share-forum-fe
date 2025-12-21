@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect, useMemo } from "react";
-import { AppLayout } from "@/components/app-layout";
+import { AppLayout } from "@/components/layout/app-layout";
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("posts");

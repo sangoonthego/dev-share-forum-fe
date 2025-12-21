@@ -1,5 +1,5 @@
-import { AppLayout } from "@/components/app-layout"
-import { SearchInterface } from "@/components/search-interface"
+import { AppLayout } from "@/components/layout/app-layout"
+import { SearchInterface } from "@/components/search/search-interface"
 
 export default function SearchPage() {
   return (

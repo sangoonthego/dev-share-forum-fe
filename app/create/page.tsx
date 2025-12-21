@@ -1,5 +1,5 @@
-import { AppLayout } from "@/components/app-layout"
-import { MarkdownEditor } from "@/components/markdown-editor"
+import { AppLayout } from "@/components/layout/app-layout"
+import { MarkdownEditor } from "@/components/markdown/markdown-editor"
 
 export default function CreatePage() {
   return (

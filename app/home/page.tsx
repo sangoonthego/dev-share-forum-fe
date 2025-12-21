@@ -1,10 +1,10 @@
-import { AppLayout } from "@/components/app-layout"
-import { PostFeed } from "@/components/post-feed"
+import { AppLayout } from "@/components/layout/app-layout"
+import { PostFeed } from "@/components/post/post-feed"
 import { TrendingSidebar } from "@/components/trending-sidebar"
-import { SearchOverlay } from "@/components/search-overlay"
+import { SearchOverlay } from "@/components/search/search-overlay"
 import { Suspense } from "react"
-import { PostCardSkeleton } from "@/components/post-card"
-import { DailyCuratorBanner } from "@/components/daily-curator-banner"
+import { PostCardSkeleton } from "@/components/post/post-card"
+import { DailyCuratorBanner } from "@/components/banner/daily-curator-banner"
 
 export default function HomePage() {
   return (

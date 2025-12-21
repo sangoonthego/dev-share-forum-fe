@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Bold, Italic, LinkIcon, Code, List, ImageIcon, Sparkles, Send, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { MarkdownPreview } from "@/components/markdown-preview"
+import { MarkdownPreview } from "@/components/markdown/markdown-preview"
 import { SmartEditorSuggestions } from "@/components/smart-editor-suggestions"
 
 export function MarkdownEditor() {
