@@ -241,6 +241,7 @@ export function AIChatbotWidget() {
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bot className="h-6 w-6 text-white" />
+        <div className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-75" />
       </Button>
 
       {isOpen && (

@@ -3,7 +3,7 @@ import { AIAgentDemo } from "@/components/agentic/ai-agent-demo";
 
 export function AIDemoSection() {
   return (
-    <section className="container py-20 md:py-32 bg-muted/30">
+    <section id="agentic_ai" className="container py-20 md:py-32 bg-muted/30">
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm">

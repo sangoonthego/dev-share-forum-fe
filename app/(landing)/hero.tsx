@@ -6,7 +6,7 @@ import { TechMarquee } from "@/components/tech-marquee";
 export function Hero() {
   return (
     <section className="container flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-12 md:py-20">
-      <div className="mx-auto max-w-4xl space-y-8 text-center">
+      <div className="mx-auto max-w-4xl space-y-8 text-center pt-5">
         <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-2 text-sm animate-fade-in">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>

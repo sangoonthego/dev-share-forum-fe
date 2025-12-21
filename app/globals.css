@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  scroll-behavior: smooth;
+  /* scroll-padding-top: 80% */
+}
+
 :root {
   /* DevShare Lite theme - Light mode with subtle blue accent */
   --background: oklch(0.99 0.002 264);

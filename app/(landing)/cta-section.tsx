@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="container py-20 md:py-32">
+    <section id="cta" className="container py-20 md:py-32">
       <Card className="mx-auto max-w-4xl p-8 md:p-12 text-center space-y-6 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 border-primary/20">
         <h2 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl">Ready to start sharing?</h2>
         <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto">
