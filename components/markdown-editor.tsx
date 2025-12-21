@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { Bold, Italic, LinkIcon, Code, List, ImageIcon, Sparkles, Send, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MarkdownPreview } from "@/components/markdown-preview"
-import { AIAssistantPanel } from "@/components/ai-assistant-panel"
+import { SmartEditorSuggestions } from "@/components/smart-editor-suggestions"
 
 export function MarkdownEditor() {
   const [title, setTitle] = useState("")
@@ -227,8 +227,13 @@ export function MarkdownEditor() {
 
       {/* AI Assistant Sidebar */}
       {showAI && (
-        <div className="lg:col-span-4">
-          <AIAssistantPanel title={title} content={content} onApply={(newContent) => setContent(newContent)} />
+        <div className="lg:col-span-4 space-y-4">
+          <SmartEditorSuggestions
+            title={title}
+            content={content}
+            onApplyTitle={(newTitle) => setTitle(newTitle)}
+            onApplyTags={(newTags) => setTags([...tags, ...newTags])}
+          />
         </div>
       )}
     </div>

@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Search, PenSquare, Bell, User, Code2, Calendar } from "lucide-react"
+import { Home, Search, PenSquare, Bell, User, Code2, Calendar, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 const routes = [
   { icon: Home, label: "Home", href: "/home" },
@@ -114,6 +115,22 @@ export function DesktopSidebar() {
             </Link>
           )
         })}
+
+        <Link href="/ai-demo">
+          <Button
+            variant={pathname === "/ai-demo" ? "secondary" : "ghost"}
+            className={cn(
+              "w-full justify-start gap-3 active:scale-95 transition-transform",
+              pathname === "/ai-demo" && "bg-primary/10 text-primary font-medium",
+            )}
+          >
+            <Bot className="h-5 w-5" />
+            AI Demo
+            <Badge variant="secondary" className="ml-auto text-xs">
+              New
+            </Badge>
+          </Button>
+        </Link>
       </nav>
 
       <div className="border-t p-4">
