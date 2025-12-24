@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Search, PenSquare, Bell, User, Code2, Calendar, Bot } from "lucide-react"
+import { Home, Search, PenSquare, Code2, Calendar, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { Button } from "@/components/ui/button"
@@ -10,11 +10,9 @@ import { Badge } from "@/components/ui/badge"
 
 const routes = [
   { icon: Home, label: "Home", href: "/home" },
-  { icon: Calendar, label: "Event", href: "/events" },
-  { icon: Search, label: "Search", href: "/search", isSearchTrigger: true },
+  { icon: Calendar, label: "Calendar", href: "/calendar" },
+  { icon: Search, label: "Explore", href: "/explore", isSearchTrigger: true },
   { icon: PenSquare, label: "Create", href: "/create" },
-  // { icon: Bell, label: "Notifications", href: "/notifications" },
-  // { icon: User, label: "Profile", href: "/profile" },
 ]
 
 export function MobileNavigation() {
