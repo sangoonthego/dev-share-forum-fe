@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation" // 1. Import useRouter
-import { Github, Chrome, Code2 } from "lucide-react"
+import { Github, Chrome, Code2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -37,7 +37,18 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-lg border-0">
-        <div className="p-8 md:p-12">
+        <div className="p-8 md:p-10">
+          <div className="flex items-center justify-start mb-6">
+            <Link
+              href="/"
+              className="flex items-center text-muted-foreground hover:text-primary transition"
+            >
+            <Button size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <span className="text-sm">Back</span>
+            </Button>
+            </Link>
+          </div>
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Code2 className="h-8 w-8 text-primary" />
