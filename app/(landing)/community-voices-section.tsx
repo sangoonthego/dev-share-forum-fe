@@ -141,7 +141,7 @@ export function CommunityVoicesSection() {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <section className="relative py-24 px-4 md:px-6 lg:px-8 overflow-hidden">
+    <section id="community" className="relative py-24 px-4 md:px-6 lg:px-8 overflow-hidden">
       {/* Background gradient orbs */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />

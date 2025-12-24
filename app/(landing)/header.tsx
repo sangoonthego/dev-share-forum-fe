@@ -27,9 +27,13 @@ export function Header() {
   );
 
   const navItems = [
+    { name: "Pulse", href: "#pulse" },
+    { name: "Expert", href: "#experts" },
+    { name: "Contribution", href: "#contributions" },
+    { name: "Agent", href: "#agents" },
     { name: "Features", href: "#features" },
-    { name: "Agentic AI", href: "#agentic_ai" },
-    { name: "CTA", href: "#cta" },
+    // { name: "Agentic AI", href: "#agentic_ai" },
+    { name: "Community", href: "#community" },
   ];
 
   return (
@@ -71,12 +75,12 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" asChild className="hidden sm:inline-flex">
+          {/* <Button variant="ghost" asChild className="hidden sm:inline-flex">
             <Link href="/auth/login">Sign In</Link>
-          </Button>
+          </Button> */}
           <Button asChild className="active:scale-95 transition-transform rounded-full">
-            <Link href="/home">
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
+            <Link href="/auth/login">
+              Signin <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>

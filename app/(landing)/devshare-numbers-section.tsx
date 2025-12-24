@@ -75,14 +75,14 @@ const ContributionHeatmap = () => {
   const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-8 ml-12">
       {/* LEFT: Heatmap Section */}
       <div className="flex-1 min-w-0">
         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
           {/* Day labels */}
           <div className="flex flex-col gap-1 justify-start pt-8">
             {dayLabels.map((day) => (
-              <div key={day} className="h-[12px] text-[10px] text-muted-foreground w-7 flex items-center">
+              <div key={day} className="h-[12px] text-[12px] text-muted-foreground w-7 flex items-center">
                 {day}
               </div>
             ))}
@@ -95,7 +95,7 @@ const ContributionHeatmap = () => {
                 const { date } = heatmapData[weekIdx * 7]
                 const isMonthStart = date.getDate() <= 7 && weekIdx > 0
                 return (
-                  <div key={`month-${weekIdx}`} className="w-[12px] h-5 text-[10px] text-muted-foreground flex items-center justify-center">
+                  <div key={`month-${weekIdx}`} className="w-[12px] h-5 text-[12px] text-muted-foreground flex items-center justify-center">
                     {isMonthStart ? monthLabels[date.getMonth()] : ""}
                   </div>
                 )
@@ -128,7 +128,7 @@ const ContributionHeatmap = () => {
         </div>
 
         {/* Legend: Right under the heatmap */}
-        <div className="flex items-center gap-2 mt-4 text-[11px] pl-9">
+        <div className="flex items-center gap-2 mt-4 text-[14px] pl-9">
           <span className="text-muted-foreground">Less</span>
           {[0, 2, 4, 6, 8, 10].map((i) => (
             <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${getColor(i)}`} />
@@ -166,7 +166,7 @@ export function DevShareNumbersSection() {
   ]
 
   return (
-    <section className="container py-20 md:py-32 space-y-12 max-w-7xl mx-auto px-4">
+    <section id="contributions" className="container py-20 md:py-32 space-y-12 max-w-7xl mx-auto px-4">
       <div className="text-center space-y-4">
         <h2 className="font-mono text-3xl font-bold sm:text-4xl md:text-5xl">
           DevShare in Numbers
@@ -206,7 +206,7 @@ export function DevShareNumbersSection() {
       </div>
 
       <Card className="rounded-2xl border p-8 bg-card/50 backdrop-blur shadow-sm">
-        <h3 className="font-mono text-lg font-semibold mb-8">
+        <h3 className="font-mono text-xl font-semibold mb-8">
           Global Contributions
         </h3>
         <ContributionHeatmap />

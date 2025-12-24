@@ -36,7 +36,7 @@ export function ExperienceAgentSection() {
   }
 
   return (
-    <section className="container py-20 md:py-32 space-y-12">
+    <section id="agents" className="container py-20 md:py-32 space-y-12">
       <div className="text-center space-y-4">
         <h2 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Experience the Agent</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

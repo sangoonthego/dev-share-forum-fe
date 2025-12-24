@@ -21,7 +21,7 @@ export default function LandingPage() {
         <DevShareNumbersSection />
         <ExperienceAgentSection />
         <FeaturesSection />
-        <AIDemoSection />
+        {/* <AIDemoSection /> */}
         <CommunityVoicesSection />
         {/* <CTASection /> */}
       </main>
