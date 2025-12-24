@@ -5,32 +5,6 @@ import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Activity, Users, Zap, TrendingUp } from "lucide-react"
 
-const CounterNumber = ({
-  value,
-  duration = 2,
-}: {
-  value: number
-  duration?: number
-}) => {
-  return (
-    <div className="h-[48px] md:h-[60px] overflow-hidden flex items-start">
-      <motion.div
-        initial={{ y: 0 }}
-        whileInView={{
-          y: -value * 10, // Giả lập cuộn số
-          transition: { duration, ease: "easeOut" },
-        }}
-        viewport={{ once: true }}
-        className="text-4xl md:text-5xl font-bold tabular-nums leading-none"
-      >
-        {Array.from({ length: 100 }, (_, i) => (
-          <div key={i}>{i}</div>
-        ))}
-      </motion.div>
-    </div>
-  )
-}
-
 type HeatmapDay = {
   date: Date
   count: number
@@ -40,7 +14,7 @@ const ContributionHeatmap = () => {
   const [selectedYear, setSelectedYear] = useState(2025)
   const years = [2026, 2025, 2024, 2023]
 
-  // Generate 364 days of mock data (approx 52 weeks)
+  // Tạo dữ liệu giả lập cho 364 ngày
   const generateHeatmapData = (): HeatmapDay[] => {
     const data: HeatmapDay[] = []
     const today = new Date()
@@ -75,14 +49,14 @@ const ContributionHeatmap = () => {
   const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 ml-12">
+    <div className="flex flex-col lg:flex-row gap-8 ml-0 md:ml-12 overflow-hidden">
       {/* LEFT: Heatmap Section */}
       <div className="flex-1 min-w-0">
         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
           {/* Day labels */}
           <div className="flex flex-col gap-1 justify-start pt-8">
             {dayLabels.map((day) => (
-              <div key={day} className="h-[12px] text-[12px] text-muted-foreground w-7 flex items-center">
+              <div key={day} className="h-[12px] text-[10px] dark:text-white text-muted-foreground w-7 flex items-center">
                 {day}
               </div>
             ))}
@@ -95,45 +69,66 @@ const ContributionHeatmap = () => {
                 const { date } = heatmapData[weekIdx * 7]
                 const isMonthStart = date.getDate() <= 7 && weekIdx > 0
                 return (
-                  <div key={`month-${weekIdx}`} className="w-[12px] h-5 text-[12px] text-muted-foreground flex items-center justify-center">
+                  <div key={`month-${weekIdx}`} className="w-[12px] h-5 text-[10px] dark:text-white text-muted-foreground flex items-center justify-center">
                     {isMonthStart ? monthLabels[date.getMonth()] : ""}
                   </div>
                 )
               })}
             </div>
 
-            {/* Cells */}
+            {/* Cells with Snake Animation */}
             <div className="flex gap-1">
               {weeks.map((week, weekIdx) => (
                 <div key={weekIdx} className="flex flex-col gap-1">
-                  {week.map((day, dayIdx) => (
-                    <motion.div
-                      key={`${weekIdx}-${dayIdx}`}
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: (weekIdx * 7 + dayIdx) * 0.002, duration: 0.2 }}
-                      className="group relative"
-                    >
-                      <div className={`w-[12px] h-[12px] rounded-[2px] transition-all hover:ring-2 ring-primary/50 cursor-pointer ${getColor(day.count)}`} />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block px-2 py-1 bg-foreground text-background text-[10px] rounded whitespace-nowrap z-10">
-                        {day.count} contributions on {day.date.toLocaleDateString()}
-                      </div>
-                    </motion.div>
-                  ))}
+                  {week.map((day, dayIdx) => {
+                    // Thuật toán đường đi con rắn (Zic-zac)
+                    // Cột chẵn (0, 2, 4...): chạy từ trên xuống (0 -> 6)
+                    // Cột lẻ (1, 3, 5...): chạy từ dưới lên (6 -> 0)
+                    const snakeOrder = weekIdx % 2 === 0 
+                      ? (weekIdx * 7 + dayIdx) 
+                      : (weekIdx * 7 + (6 - dayIdx));
+
+                    return (
+                      <motion.div
+                        key={`${weekIdx}-${dayIdx}`}
+                        initial={{ 
+                          opacity: 0, 
+                          backgroundColor: "rgb(79 70 229)", // Màu "đầu rắn" rực rỡ
+                          scale: 0.3 
+                        }}
+                        whileInView={{ 
+                          opacity: 1, 
+                          backgroundColor: "rgba(79, 70, 229, 0)", // Mờ dần về trong suốt để hiện màu thực
+                          scale: 1,
+                          transition: { 
+                            delay: snakeOrder * 0.006, // Tốc độ rắn bò
+                            duration: 0.4,
+                            ease: "easeOut"
+                          } 
+                        }}
+                        viewport={{ once: true }}
+                        className="group relative"
+                      >
+                        <div className={`w-[12px] h-[12px] rounded-[2px] transition-all hover:ring-2 ring-primary/50 cursor-pointer ${getColor(day.count)}`} />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block px-2 py-1 bg-foreground text-background text-[10px] rounded whitespace-nowrap z-50 shadow-xl">
+                          {day.count} contributions on {day.date.toLocaleDateString()}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Legend: Right under the heatmap */}
-        <div className="flex items-center gap-2 mt-4 text-[14px] pl-9">
-          <span className="text-muted-foreground">Less</span>
+        {/* Legend */}
+        <div className="flex items-center gap-2 mt-4 text-[12px] pl-9">
+          <span className="text-muted-foreground font-mono">Less</span>
           {[0, 2, 4, 6, 8, 10].map((i) => (
             <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${getColor(i)}`} />
           ))}
-          <span className="text-muted-foreground">More</span>
+          <span className="text-muted-foreground font-mono">More</span>
         </div>
       </div>
 
@@ -143,9 +138,9 @@ const ContributionHeatmap = () => {
           <button
             key={year}
             onClick={() => setSelectedYear(year)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all text-left ${
+            className={`px-4 py-2 rounded-md text-sm font-mono font-medium transition-all text-left ${
               selectedYear === year
-                ? "bg-indigo-600 text-white shadow-md"
+                ? "bg-indigo-600 text-white shadow-lg scale-105"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
@@ -166,17 +161,30 @@ export function DevShareNumbersSection() {
   ]
 
   return (
-    <section id="contributions" className="container py-20 md:py-32 space-y-12 max-w-7xl mx-auto px-4">
+    <section id="contributions" className="py-24 space-y-16 max-w-7xl mx-auto px-4 overflow-hidden">
+      {/* Section Header */}
       <div className="text-center space-y-4">
-        <h2 className="font-mono text-3xl font-bold sm:text-4xl md:text-5xl">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="font-mono text-4xl font-bold sm:text-5xl tracking-tight"
+        >
           DevShare in Numbers
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Real-time metrics showcasing our thriving community
-        </p>
+        </motion.h2>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="text-lg text-muted-foreground max-w-2xl mx-auto"
+        >
+          Real-time metrics showcasing our thriving community and ecosystem activity
+        </motion.p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon
           return (
@@ -186,31 +194,49 @@ export function DevShareNumbersSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="rounded-2xl border bg-card/50 backdrop-blur p-6 space-y-4 shadow-sm"
+              className="group rounded-3xl hover:scale-105 border bg-card/40 backdrop-blur-md p-7 space-y-4 shadow-sm hover:shadow-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300"
             >
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
+                <div className="space-y-1">
+                  <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
                     {stat.label}
                   </p>
-                  <div className="text-3xl font-bold">
+                  <div className="text-3xl font-bold tracking-tighter">
                     {stat.value.toLocaleString()}
-                    <span className="text-indigo-600">{stat.suffix}</span>
+                    <span className="text-indigo-500">{stat.suffix}</span>
                   </div>
                 </div>
-                <Icon className="w-6 h-6 text-indigo-600/50" />
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                  <Icon className="w-5 h-5" />
+                </div>
               </div>
             </motion.div>
           )
         })}
       </div>
 
-      <Card className="rounded-2xl border p-8 bg-card/50 backdrop-blur shadow-sm">
-        <h3 className="font-mono text-xl font-semibold mb-8">
-          Global Contributions
-        </h3>
-        <ContributionHeatmap />
-      </Card>
+      {/* Main Heatmap Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="rounded-[2.5rem] border p-6 md:p-10 bg-card/30 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+          {/* Animated Glow effect */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] -z-10" />
+          
+          <h3 className="font-mono text-xl font-semibold mb-10 flex items-center gap-3">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            Global Network Activity
+          </h3>
+          
+          <ContributionHeatmap />
+        </Card>
+      </motion.div>
     </section>
   )
 }
