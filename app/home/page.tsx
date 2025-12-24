@@ -9,7 +9,7 @@ import { DailyCuratorBanner } from "@/components/banner/daily-curator-banner"
 export default function HomePage() {
   return (
     <AppLayout>
-      <div className="min-h-screen p-7">
+      <div className="min-h-screen p-6">
         {/* Main content area with 3-column layout on desktop */}
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-6 py-6 lg:grid-cols-12">
