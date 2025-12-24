@@ -236,4 +236,36 @@ html {
   .event-card-hover:hover {
     transform: translateY(-4px);
   }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Spotlight gradient effect */
+  .spotlight {
+    background: radial-gradient(600px at var(--mouse-x, 0) var(--mouse-y, 0), rgba(79, 70, 229, 0.15), transparent 80%);
+  }
 }

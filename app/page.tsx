@@ -8,6 +8,7 @@ import { FeaturesSection } from "./(landing)/features-section"
 import { AIDemoSection } from "./(landing)/ai-demo-section"
 import { CTASection } from "./(landing)/cta-section"
 import { Footer } from "./(landing)/footer"
+import { CommunityVoicesSection } from "./(landing)/community-voices-section"
 
 export default function LandingPage() {
   return (
@@ -21,7 +22,8 @@ export default function LandingPage() {
         <ExperienceAgentSection />
         <FeaturesSection />
         <AIDemoSection />
-        <CTASection />
+        <CommunityVoicesSection />
+        {/* <CTASection /> */}
       </main>
       <Footer />
     </div>
