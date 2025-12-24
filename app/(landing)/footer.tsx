@@ -41,7 +41,7 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <Code2 className="h-6 w-6 text-primary" />
               <span className="font-mono text-xl font-bold tracking-tight">
-                Dev Share Forum
+                DevShare Forum
               </span>
             </div>
             <p className="text-pretty text-sm leading-6 text-muted-foreground max-w-xs">

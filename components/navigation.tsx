@@ -76,7 +76,7 @@ export function DesktopSidebar({
           <Code2 className="h-6 w-6 text-primary shrink-0" />
           {!collapsed && (
             <span className="font-mono text-lg font-semibold truncate">
-              Dev Share Forum
+              DevShare Forum
             </span>
           )}
         </div>

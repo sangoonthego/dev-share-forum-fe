@@ -80,7 +80,7 @@ export function LeadingVoicesSection() {
       ref={ref}
       className="container py-20 md:py-32 space-y-12"
     >
-      {/* === HEADER (GIỮ NGUYÊN) === */}
+      {/*  */}
       <div className="text-center space-y-4">
         <h2 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
           Leading Voices
@@ -90,7 +90,7 @@ export function LeadingVoicesSection() {
         </p>
       </div>
 
-      {/* === CARDS (GIỮ NGUYÊN) === */}
+      {/*  */}
       <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {experts.map((expert, idx) => (
           <motion.div
@@ -166,10 +166,10 @@ export function LeadingVoicesSection() {
                   <p className="text-xs text-muted-foreground">Karma</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-2xl font-bold text-yellow-400">
                     ★★★★★
                   </div>
-                  <p className="text-xs text-muted-foreground">Rating</p>
+                  <p className="text-xs text-muted-foreground pl-6">Rating</p>
                 </div>
               </div>
 

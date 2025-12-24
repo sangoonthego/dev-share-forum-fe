@@ -55,8 +55,10 @@ export function Header() {
       >
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Code2 className="h-6 w-6 text-primary" />
-          <span className="font-mono text-lg font-semibold hidden md:block">Dev Share Forum</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Code2 className="h-6 w-6 text-primary" />
+            <span className="font-mono text-lg font-semibold hidden md:block">DevShare Forum</span>
+          </Link>
         </div>
 
         {/* Navigation Links */}
