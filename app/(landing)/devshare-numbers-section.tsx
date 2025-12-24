@@ -4,7 +4,16 @@ import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Activity, Users, Zap, TrendingUp } from "lucide-react"
 
-const CounterNumber = ({ value, duration = 2 }: { value: number; duration?: number }) => {
+/* =======================
+   Counter Number
+======================= */
+const CounterNumber = ({
+  value,
+  duration = 2,
+}: {
+  value: number
+  duration?: number
+}) => {
   return (
     <motion.div
       initial={{ y: 0 }}
@@ -22,26 +31,38 @@ const CounterNumber = ({ value, duration = 2 }: { value: number; duration?: numb
   )
 }
 
+/* =======================
+   Heatmap
+======================= */
+type HeatmapDay = {
+  date: Date
+  count: number
+}
+
 const ContributionHeatmap = () => {
   // Generate 365 days of mock data
-  const generateHeatmapData = () => {
-    const data: { date: Date; count: number }[] = []
+  const generateHeatmapData = (): HeatmapDay[] => {
+    const data: HeatmapDay[] = []
     const today = new Date()
+
     for (let i = 364; i >= 0; i--) {
       const date = new Date(today)
-      date.setDate(date.getDate() - i)
+      date.setDate(today.getDate() - i)
+
       data.push({
         date,
-        count: Math.floor(Math.random() * 11), // 0-10 contributions
+        count: Math.floor(Math.random() * 11),
       })
     }
+
     return data
   }
 
   const heatmapData = generateHeatmapData()
-  const weeks = Array.from({ length: 52 }, (_, i) => heatmapData.slice(i * 7, (i + 1) * 7))
+  const weeks = Array.from({ length: 52 }, (_, i) =>
+    heatmapData.slice(i * 7, (i + 1) * 7)
+  )
 
-  // Get color based on contribution intensity
   const getColor = (count: number) => {
     if (count === 0) return "bg-muted/20"
     if (count <= 2) return "bg-indigo-200 dark:bg-indigo-900/40"
@@ -52,41 +73,57 @@ const ContributionHeatmap = () => {
   }
 
   const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const monthLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ]
 
   return (
     <div className="space-y-6">
-      {/* Heatmap Grid */}
       <div className="flex gap-2">
         {/* Day labels */}
         <div className="flex flex-col gap-1 justify-start pt-6">
-          {dayLabels.map((day, idx) => (
-            <div key={idx} className="h-[12px] text-xs text-muted-foreground w-6 flex items-center">
+          {dayLabels.map((day) => (
+            <div
+              key={day}
+              className="h-[12px] text-xs text-muted-foreground w-6 flex items-center"
+            >
               {day}
             </div>
           ))}
         </div>
 
-        {/* Weeks grid */}
+        {/* Heatmap */}
         <div className="flex-1 overflow-x-auto">
-          <div className="flex gap-1">
-            {/* Month labels row */}
-            <div className="flex gap-1 mb-2">
+          <div className="flex flex-col gap-2">
+            {/* Month labels */}
+            <div className="flex gap-1">
               {weeks.map((_, weekIdx) => {
-                const firstDate = heatmapData[weekIdx * 7]
-                const isMonthStart = firstDate.getDate() <= 7 && weekIdx > 0
+                const { date } = heatmapData[weekIdx * 7] // ✅ FIX
+                const isMonthStart = date.getDate() <= 7 && weekIdx > 0
+
                 return (
                   <div
                     key={`month-${weekIdx}`}
                     className="w-[12px] h-5 text-xs text-muted-foreground flex items-center justify-center"
                   >
-                    {isMonthStart ? monthLabels[firstDate.getMonth()] : ""}
+                    {isMonthStart ? monthLabels[date.getMonth()] : ""}
                   </div>
                 )
               })}
             </div>
 
-            {/* Heatmap cells */}
+            {/* Cells */}
             <div className="flex gap-1">
               {weeks.map((week, weekIdx) => (
                 <div key={weekIdx} className="flex flex-col gap-1">
@@ -103,16 +140,16 @@ const ContributionHeatmap = () => {
                       className="group relative"
                     >
                       <div
-                        className={`w-[12px] h-[12px] rounded-sm transition-all hover:ring-2 ring-primary/50 cursor-pointer ${getColor(day.count)}`}
+                        className={`w-[12px] h-[12px] rounded-sm transition-all hover:ring-2 ring-primary/50 cursor-pointer ${getColor(
+                          day.count
+                        )}`}
                       />
+
                       {/* Tooltip */}
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        whileHover={{ opacity: 1, y: 0 }}
-                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs rounded whitespace-nowrap pointer-events-none z-10 group-hover:block hidden"
-                      >
-                        {day.count} contributions on {day.date.toLocaleDateString()}
-                      </motion.div>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block px-2 py-1 bg-foreground text-background text-xs rounded whitespace-nowrap z-10">
+                        {day.count} contributions on{" "}
+                        {day.date.toLocaleDateString()}
+                      </div>
                     </motion.div>
                   ))}
                 </div>
@@ -125,8 +162,8 @@ const ContributionHeatmap = () => {
       {/* Legend */}
       <div className="flex items-center justify-end gap-2 text-xs">
         <span className="text-muted-foreground">Less</span>
-        {[0, 2, 4, 6, 8, 10].map((intensity) => (
-          <div key={intensity} className={`w-3 h-3 rounded-sm ${getColor(intensity)}`} />
+        {[0, 2, 4, 6, 8, 10].map((i) => (
+          <div key={i} className={`w-3 h-3 rounded-sm ${getColor(i)}`} />
         ))}
         <span className="text-muted-foreground">More</span>
       </div>
@@ -134,6 +171,9 @@ const ContributionHeatmap = () => {
   )
 }
 
+/* =======================
+   Section
+======================= */
 export function DevShareNumbersSection() {
   const stats = [
     { label: "Active Posts", value: 12847, icon: Activity, suffix: "+" },
@@ -143,25 +183,18 @@ export function DevShareNumbersSection() {
   ]
 
   return (
-    <section className="container py-20 md:py-32 space-y-12 relative">
-      <div
-        className="absolute inset-0 -z-10 opacity-5 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(0deg, transparent 24%, rgba(255, 0, 0, .05) 25%, rgba(255, 0, 0, .05) 26%, transparent 27%, transparent 74%, rgba(255, 0, 0, .05) 75%, rgba(255, 0, 0, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 0, 0, .05) 25%, rgba(255, 0, 0, .05) 26%, transparent 27%, transparent 74%, rgba(255, 0, 0, .05) 75%, rgba(255, 0, 0, .05) 76%, transparent 77%, transparent)",
-          backgroundSize: "50px 50px",
-        }}
-      />
-
+    <section className="container py-20 md:py-32 space-y-12">
       <div className="text-center space-y-4">
-        <h2 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">DevShare in Numbers</h2>
+        <h2 className="font-mono text-3xl font-bold sm:text-4xl md:text-5xl">
+          DevShare in Numbers
+        </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Real-time metrics showcasing our thriving community
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        {stats.slice(0, 2).map((stat, idx) => {
+        {stats.map((stat, idx) => {
           const Icon = stat.icon
           return (
             <motion.div
@@ -170,38 +203,16 @@ export function DevShareNumbersSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="lg:col-span-2 rounded-2xl border bg-card/50 backdrop-blur p-6 md:p-8 space-y-4 hover:border-primary/50 transition-colors"
+              className="rounded-2xl border bg-card/50 backdrop-blur p-6 space-y-4"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">{stat.label}</p>
-                  <div className="text-4xl md:text-5xl font-bold tabular-nums">
-                    {stat.value.toLocaleString()}
-                    <span className="text-primary">{stat.suffix}</span>
-                  </div>
-                </div>
-                <Icon className="w-8 h-8 text-primary/50" />
-              </div>
-            </motion.div>
-          )
-        })}
-        {stats.slice(2).map((stat, idx) => {
-          const Icon = stat.icon
-          return (
-            <motion.div
-              key={idx + 2}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: (idx + 2) * 0.1 }}
-              className="rounded-2xl border bg-card/50 backdrop-blur p-6 space-y-4 hover:border-primary/50 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">{stat.label}</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {stat.label}
+                  </p>
                   <div className="text-3xl font-bold">
                     {stat.value}
-                    <span className="text-primary text-lg">{stat.suffix}</span>
+                    <span className="text-primary">{stat.suffix}</span>
                   </div>
                 </div>
                 <Icon className="w-6 h-6 text-primary/50" />
@@ -211,8 +222,10 @@ export function DevShareNumbersSection() {
         })}
       </div>
 
-      <Card className="rounded-2xl border-2 border-primary/20 p-6 bg-card/50 backdrop-blur max-w-6xl mx-auto">
-        <h3 className="font-mono text-lg font-semibold mb-6">Global Contributions</h3>
+      <Card className="rounded-2xl border p-6 bg-card/50 backdrop-blur max-w-6xl mx-auto">
+        <h3 className="font-mono text-lg font-semibold mb-6">
+          Global Contributions
+        </h3>
         <ContributionHeatmap />
       </Card>
     </section>
