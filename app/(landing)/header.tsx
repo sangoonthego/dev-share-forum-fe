@@ -72,7 +72,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button variant="ghost" asChild className="hidden sm:inline-flex">
-            <Link href="/home">Sign In</Link>
+            <Link href="/auth/login">Sign In</Link>
           </Button>
           <Button asChild className="active:scale-95 transition-transform rounded-full">
             <Link href="/home">

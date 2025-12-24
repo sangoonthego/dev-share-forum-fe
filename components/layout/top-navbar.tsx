@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ThemeToggle } from "../theme/theme-toggle"
 
 export function TopNavbar() {
   const pathname = usePathname()
@@ -33,7 +34,7 @@ export function TopNavbar() {
               variant="ghost"
               size="sm"
               className={cn(
-                "flex items-center gap-2 px-3 text-muted-foreground transition-colors hover:text-primary",
+                "flex items-center gap-2 px-3 text-muted-foreground transition-colors hover:text-white",
                 pathname === item.href && "text-foreground font-bold"
               )}
             >
@@ -49,6 +50,8 @@ export function TopNavbar() {
         <span className="hidden lg:block text-xs font-mono text-muted-foreground">
           {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} GMT+7
         </span>
+
+        <ThemeToggle />
 
         <Link href="/search">
           <Button variant="ghost" size="icon" className="text-muted-foreground">

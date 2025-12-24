@@ -280,7 +280,7 @@ export default function AIInsightsPage() {
                       </p>
 
                       <div className="flex items-center gap-2">
-                        <Avatar size="sm">
+                        <Avatar className="h-8 w-8">
                           <AvatarImage src={rec.author.avatar || "/placeholder.svg"} />
                         </Avatar>
                         <span className="text-sm text-muted-foreground">by {rec.author.name}</span>

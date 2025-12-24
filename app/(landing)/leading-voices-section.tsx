@@ -22,20 +22,20 @@ export function LeadingVoicesSection() {
 
   const experts = [
     {
-      name: "Sarah Chen",
+      name: "Logan Matthew",
       title: "AI/ML Architect",
       karma: 2847,
       badges: ["Top Speaker", "AI Master"],
       posts: 156,
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      image: "/indi/me.jpg",
     },
     {
-      name: "Alex Rodriguez",
+      name: "Tuan Ngoc",
       title: "Full-Stack Lead",
       karma: 2654,
       badges: ["Top Contributor", "Code Master"],
       posts: 203,
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      image: "/indi/ntn.jpg",
     },
   ]
 
@@ -50,12 +50,24 @@ export function LeadingVoicesSection() {
         {experts.map((expert, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ 
+                opacity: 0, 
+                y: 20, 
+                filter: "blur(10px)" 
+            }}
+            whileInView={{ 
+                opacity: 1, 
+                y: 0, 
+                filter: "blur(0px)"  
+            }}
             viewport={{ once: true }}
-            transition={{ delay: idx * 0.2 }}
+            transition={{ 
+                delay: idx * 0.2,
+                duration: 2,        
+                ease: "easeOut" 
+            }}
             className="grid md:grid-cols-2 gap-6 items-center"
-          >
+            >
             <div className="relative h-96 group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-accent/20 to-primary/10 rounded-2xl blur-2xl" />
               <motion.div
@@ -65,7 +77,7 @@ export function LeadingVoicesSection() {
                 <img
                   src={expert.image || "/placeholder.svg"}
                   alt={expert.name}
-                  className="w-full h-full object-cover blur-sm opacity-50"
+                  className="w-full h-full object-cover" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
               </motion.div>
@@ -89,7 +101,7 @@ export function LeadingVoicesSection() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-card/50">
+              <div className="grid grid-cols-3 items-start gap-2 p-4 rounded-lg bg-card/50">
                 <div className="text-center">
                   <motion.div
                     initial={{ opacity: 0 }}

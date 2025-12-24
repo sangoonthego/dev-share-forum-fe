@@ -140,7 +140,7 @@ export function ExploreContent() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Avatar size="sm">
+                      <Avatar className="h-8 w-8">
                         <AvatarImage src={featuredPost.author.avatar || "/placeholder.svg"} />
                       </Avatar>
                       <div>
@@ -174,7 +174,7 @@ export function ExploreContent() {
                   key={contributor.name}
                   className="flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors cursor-pointer"
                 >
-                  <Avatar size="sm">
+                  <Avatar className="h-8 w-8">
                     <AvatarImage src={contributor.avatar || "/placeholder.svg"} />
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -277,7 +277,7 @@ export function ExploreContent() {
 
                     <div className="flex items-center justify-between pt-4 border-t text-xs text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <Avatar size="xs">
+                        <Avatar className="h-6 w-6">
                           <AvatarImage src={post.author.avatar || "/placeholder.svg"} />
                         </Avatar>
                         <span>{post.author.name}</span>

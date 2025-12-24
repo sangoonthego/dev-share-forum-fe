@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { AppLayout } from "@/components/layout/app-layout"
 
 interface LeaderboardUser {
   rank: number
@@ -96,225 +97,227 @@ export default function LeaderboardPage() {
   })
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="border-b bg-gradient-to-b from-primary/10 to-transparent p-6 md:p-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-primary/20 rounded-lg">
-              <Trophy size={32} className="text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black">Community Leaderboard</h1>
-              <p className="text-muted-foreground mt-1">Celebrate our top contributors and experts</p>
-            </div>
-          </div>
-
-          {/* Time Range & Category Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mt-8">
-            <div>
-              <p className="text-sm font-semibold mb-3">Time Range</p>
-              <div className="flex gap-2">
-                {(["week", "month", "alltime"] as const).map((range) => (
-                  <Button
-                    key={range}
-                    variant={timeRange === range ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setTimeRange(range)}
-                    className="capitalize"
-                  >
-                    {range === "alltime" ? "All Time" : range.charAt(0).toUpperCase() + range.slice(1)}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold mb-3">Sort By</p>
-              <div className="flex gap-2">
-                {(["karma", "posts", "followers"] as const).map((cat) => (
-                  <Button
-                    key={cat}
-                    variant={category === cat ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCategory(cat)}
-                    className="capitalize"
-                  >
-                    {cat}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Leaderboard Table */}
-      <div className="max-w-7xl mx-auto p-6 md:p-12">
-        <div className="space-y-4">
-          {/* Top 3 Podium */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {sortedData.slice(0, 3).map((user, idx) => (
-              <Card key={user.rank} className="relative overflow-hidden">
-                <div
-                  className={`absolute top-0 left-0 right-0 h-1 ${
-                    idx === 0 ? "bg-amber-500" : idx === 1 ? "bg-gray-400" : "bg-orange-600"
-                  }`}
-                />
-
-                <div className="p-6">
-                  {/* Medal */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="text-4xl">{idx === 0 ? "🥇" : idx === 1 ? "🥈" : "🥉"}</div>
-                    <span className="text-sm font-bold text-muted-foreground">#{user.rank}</span>
-                  </div>
-
-                  {/* User Info */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-bold">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">{user.followers} followers</p>
+    <AppLayout>
+        <div className="min-h-screen bg-background">
+            {/* Hero Section */}
+            <section className="border-b bg-gradient-to-b from-primary/10 to-transparent p-6 md:p-12">
+                <div className="max-w-7xl mx-auto">
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 bg-primary/20 rounded-lg">
+                    <Trophy size={32} className="text-primary" />
                     </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="space-y-3 mb-4 py-4 border-y">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Karma</span>
-                      <span className="font-bold text-lg">{user.karma.toLocaleString()}</span>
+                    <div>
+                    <h1 className="text-3xl md:text-4xl font-black">Community Leaderboard</h1>
+                    <p className="text-muted-foreground mt-1">Celebrate our top contributors and experts</p>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Posts</span>
-                      <span className="font-bold">{user.posts}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Streak</span>
-                      <span className="font-bold flex items-center gap-1">
-                        <Zap size={16} className="text-amber-500" />
-                        {user.streak} days
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-muted-foreground">Badges</p>
-                    <div className="flex flex-wrap gap-2">
-                      {user.badges.map((badge) => (
-                        <Badge key={badge} className={`${badgeColors[badge].bg} ${badgeColors[badge].text} border-0`}>
-                          {badgeColors[badge].icon} {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
                 </div>
-              </Card>
-            ))}
-          </div>
 
-          {/* Full Leaderboard Table */}
-          <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-muted/30">
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Rank</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">User</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold">Karma</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold">Posts</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold">Answers</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold">Followers</th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold">Streak</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedData.map((user, idx) => (
-                    <tr key={user.rank} className="border-b hover:bg-muted/30 transition-colors last:border-0">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center">
-                          {idx === 0 ? (
-                            <Trophy size={20} className="text-amber-500" />
-                          ) : (
-                            <span className="font-bold text-muted-foreground">#{user.rank}</span>
-                          )}
+                {/* Time Range & Category Filters */}
+                <div className="flex flex-col md:flex-row gap-4 mt-8">
+                    <div>
+                    <p className="text-sm font-semibold mb-3">Time Range</p>
+                    <div className="flex gap-2">
+                        {(["week", "month", "alltime"] as const).map((range) => (
+                        <Button
+                            key={range}
+                            variant={timeRange === range ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTimeRange(range)}
+                            className="capitalize"
+                        >
+                            {range === "alltime" ? "All Time" : range.charAt(0).toUpperCase() + range.slice(1)}
+                        </Button>
+                        ))}
+                    </div>
+                    </div>
+
+                    <div>
+                    <p className="text-sm font-semibold mb-3">Sort By</p>
+                    <div className="flex gap-2">
+                        {(["karma", "posts", "followers"] as const).map((cat) => (
+                        <Button
+                            key={cat}
+                            variant={category === cat ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCategory(cat)}
+                            className="capitalize"
+                        >
+                            {cat}
+                        </Button>
+                        ))}
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            {/* Leaderboard Table */}
+            <div className="max-w-7xl mx-auto p-6 md:p-12">
+                <div className="space-y-4">
+                {/* Top 3 Podium */}
+                <div className="grid md:grid-cols-3 gap-6 mb-12">
+                    {sortedData.slice(0, 3).map((user, idx) => (
+                    <Card key={user.rank} className="relative overflow-hidden">
+                        <div
+                        className={`absolute top-0 left-0 right-0 h-1 ${
+                            idx === 0 ? "bg-amber-500" : idx === 1 ? "bg-gray-400" : "bg-orange-600"
+                        }`}
+                        />
+
+                        <div className="p-6">
+                        {/* Medal */}
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="text-4xl">{idx === 0 ? "🥇" : idx === 1 ? "🥈" : "🥉"}</div>
+                            <span className="text-sm font-bold text-muted-foreground">#{user.rank}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
+
+                        {/* User Info */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <Avatar className="h-12 w-12">
                             <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                          </Avatar>
-                          <div>
-                            <p className="font-semibold">{user.name}</p>
-                            <p className="text-xs text-muted-foreground">{user.followers} followers</p>
-                          </div>
+                            </Avatar>
+                            <div className="flex-1">
+                            <p className="font-bold">{user.name}</p>
+                            <p className="text-sm text-muted-foreground">{user.followers} followers</p>
+                            </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="font-bold text-lg">{user.karma.toLocaleString()}</span>
-                      </td>
-                      <td className="px-6 py-4 text-right font-medium">{user.posts}</td>
-                      <td className="px-6 py-4 text-right font-medium">{user.answers}</td>
-                      <td className="px-6 py-4 text-right font-medium">{user.followers}</td>
-                      <td className="px-6 py-4 text-center">
-                        <Badge variant="secondary" className="flex items-center justify-center gap-1 w-fit mx-auto">
-                          <Zap size={12} />
-                          {user.streak}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+                        {/* Stats */}
+                        <div className="space-y-3 mb-4 py-4 border-y">
+                            <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Karma</span>
+                            <span className="font-bold text-lg">{user.karma.toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Posts</span>
+                            <span className="font-bold">{user.posts}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Streak</span>
+                            <span className="font-bold flex items-center gap-1">
+                                <Zap size={16} className="text-amber-500" />
+                                {user.streak} days
+                            </span>
+                            </div>
+                        </div>
+
+                        {/* Badges */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold text-muted-foreground">Badges</p>
+                            <div className="flex flex-wrap gap-2">
+                            {user.badges.map((badge) => (
+                                <Badge key={badge} className={`${badgeColors[badge].bg} ${badgeColors[badge].text} border-0`}>
+                                {badgeColors[badge].icon} {badge}
+                                </Badge>
+                            ))}
+                            </div>
+                        </div>
+                        </div>
+                    </Card>
+                    ))}
+                </div>
+
+                {/* Full Leaderboard Table */}
+                <Card className="overflow-hidden">
+                    <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                        <tr className="border-b bg-muted/30">
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Rank</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">User</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold">Karma</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold">Posts</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold">Answers</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold">Followers</th>
+                            <th className="px-6 py-4 text-center text-sm font-semibold">Streak</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {sortedData.map((user, idx) => (
+                            <tr key={user.rank} className="border-b hover:bg-muted/30 transition-colors last:border-0">
+                            <td className="px-6 py-4">
+                                <div className="flex items-center justify-center">
+                                {idx === 0 ? (
+                                    <Trophy size={20} className="text-amber-500" />
+                                ) : (
+                                    <span className="font-bold text-muted-foreground">#{user.rank}</span>
+                                )}
+                                </div>
+                            </td>
+                            <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                    <AvatarImage src={user.avatar || "/placeholder.svg"} />
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">{user.name}</p>
+                                    <p className="text-xs text-muted-foreground">{user.followers} followers</p>
+                                </div>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                                <span className="font-bold text-lg">{user.karma.toLocaleString()}</span>
+                            </td>
+                            <td className="px-6 py-4 text-right font-medium">{user.posts}</td>
+                            <td className="px-6 py-4 text-right font-medium">{user.answers}</td>
+                            <td className="px-6 py-4 text-right font-medium">{user.followers}</td>
+                            <td className="px-6 py-4 text-center">
+                                <Badge variant="secondary" className="flex items-center justify-center gap-1 w-fit mx-auto">
+                                <Zap size={12} />
+                                {user.streak}
+                                </Badge>
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                    </div>
+                </Card>
+
+                {/* Info Cards */}
+                <div className="grid md:grid-cols-3 gap-6 mt-12">
+                    <Card className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Medal size={24} className="text-primary" />
+                        <h3 className="font-semibold">How Karma Works</h3>
+                    </div>
+                    <ul className="text-sm text-muted-foreground space-y-2">
+                        <li>Post published: +10 karma</li>
+                        <li>Post liked: +5 karma</li>
+                        <li>Helpful answer: +20 karma</li>
+                        <li>7-day streak: +50 karma</li>
+                    </ul>
+                    </Card>
+
+                    <Card className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Award size={24} className="text-primary" />
+                        <h3 className="font-semibold">Earn Badges</h3>
+                    </div>
+                    <ul className="text-sm text-muted-foreground space-y-2">
+                        <li>Expert: 2000+ karma</li>
+                        <li>Top Contributor: 100+ posts</li>
+                        <li>Rising Star: 10 posts in 7 days</li>
+                        <li>Helpful: 50+ answers</li>
+                    </ul>
+                    </Card>
+
+                    <Card className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <TrendingUp size={24} className="text-primary" />
+                        <h3 className="font-semibold">Keep Streaking</h3>
+                    </div>
+                    <ul className="text-sm text-muted-foreground space-y-2">
+                        <li>Post daily to build streak</li>
+                        <li>Earn bonus karma per day</li>
+                        <li>Unlock special badges</li>
+                        <li>Featured in top contributors</li>
+                    </ul>
+                    </Card>
+                </div>
+                </div>
             </div>
-          </Card>
-
-          {/* Info Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Medal size={24} className="text-primary" />
-                <h3 className="font-semibold">How Karma Works</h3>
-              </div>
-              <ul className="text-sm text-muted-foreground space-y-2">
-                <li>Post published: +10 karma</li>
-                <li>Post liked: +5 karma</li>
-                <li>Helpful answer: +20 karma</li>
-                <li>7-day streak: +50 karma</li>
-              </ul>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Award size={24} className="text-primary" />
-                <h3 className="font-semibold">Earn Badges</h3>
-              </div>
-              <ul className="text-sm text-muted-foreground space-y-2">
-                <li>Expert: 2000+ karma</li>
-                <li>Top Contributor: 100+ posts</li>
-                <li>Rising Star: 10 posts in 7 days</li>
-                <li>Helpful: 50+ answers</li>
-              </ul>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <TrendingUp size={24} className="text-primary" />
-                <h3 className="font-semibold">Keep Streaking</h3>
-              </div>
-              <ul className="text-sm text-muted-foreground space-y-2">
-                <li>Post daily to build streak</li>
-                <li>Earn bonus karma per day</li>
-                <li>Unlock special badges</li>
-                <li>Featured in top contributors</li>
-              </ul>
-            </Card>
-          </div>
         </div>
-      </div>
-    </div>
+    </AppLayout>
   )
 }
