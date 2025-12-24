@@ -200,6 +200,34 @@ html {
     animation-fill-mode: both;
   }
 
+  /* Add new animations for landing premium sections */
+  @keyframes border-beam {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(79, 70, 229, 0.6);
+    }
+  }
+
+  .animate-border-beam {
+    animation: border-beam 3s ease-infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
   /* Added smooth event card transitions */
   .event-card-hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
