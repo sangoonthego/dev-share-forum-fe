@@ -8,6 +8,7 @@ import { FeaturesSection } from "./(landing)/features-section"
 import { AIDemoSection } from "./(landing)/aidemo-section"
 import { CTASection } from "./(landing)/cta-section"
 import { Footer } from "./(landing)/footer"
+import { CommunityVoicesSection } from "./community-voices-section"
 
 export default function LandingPage() {
   return (
@@ -20,6 +21,7 @@ export default function LandingPage() {
         <DevShareNumbersSection />
         <ExperienceAgentSection />
         <FeaturesSection />
+        <CommunityVoicesSection />
         <AIDemoSection />
         <CTASection />
       </main>
