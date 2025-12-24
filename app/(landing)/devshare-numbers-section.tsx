@@ -157,6 +157,118 @@ const ContributionHeatmap = () => {
   )
 }
 
+const ContributionHeatmap = () => {
+  // Generate 365 days of mock data
+  const generateHeatmapData = () => {
+    const data: { date: Date; count: number }[] = []
+    const today = new Date()
+    for (let i = 364; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+      data.push({
+        date,
+        count: Math.floor(Math.random() * 11), // 0-10 contributions
+      })
+    }
+    return data
+  }
+
+  const heatmapData = generateHeatmapData()
+  const weeks = Array.from({ length: 52 }, (_, i) => heatmapData.slice(i * 7, (i + 1) * 7))
+
+  // Get color based on contribution intensity
+  const getColor = (count: number) => {
+    if (count === 0) return "bg-muted/20"
+    if (count <= 2) return "bg-indigo-200 dark:bg-indigo-900/40"
+    if (count <= 4) return "bg-indigo-400 dark:bg-indigo-700/60"
+    if (count <= 6) return "bg-indigo-600 dark:bg-indigo-600/80"
+    if (count <= 8) return "bg-indigo-700 dark:bg-indigo-500"
+    return "bg-indigo-900 dark:bg-indigo-400"
+  }
+
+  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+  return (
+    <div className="space-y-6">
+      {/* Heatmap Grid */}
+      <div className="flex gap-2">
+        {/* Day labels */}
+        <div className="flex flex-col gap-1 justify-start pt-6">
+          {dayLabels.map((day, idx) => (
+            <div key={idx} className="h-[12px] text-xs text-muted-foreground w-6 flex items-center">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Weeks grid */}
+        <div className="flex-1 overflow-x-auto">
+          <div className="flex gap-1">
+            {/* Month labels row */}
+            <div className="flex gap-1 mb-2">
+              {weeks.map((_, weekIdx) => {
+                const firstDate = heatmapData[weekIdx * 7]
+                const isMonthStart = firstDate.getDate() <= 7 && weekIdx > 0
+                return (
+                  <div
+                    key={`month-${weekIdx}`}
+                    className="w-[12px] h-5 text-xs text-muted-foreground flex items-center justify-center"
+                  >
+                    {isMonthStart ? monthLabels[firstDate.getMonth()] : ""}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Heatmap cells */}
+            <div className="flex gap-1">
+              {weeks.map((week, weekIdx) => (
+                <div key={weekIdx} className="flex flex-col gap-1">
+                  {week.map((day, dayIdx) => (
+                    <motion.div
+                      key={`${weekIdx}-${dayIdx}`}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        delay: (weekIdx * 7 + dayIdx) * 0.01,
+                        duration: 0.3,
+                      }}
+                      className="group relative"
+                    >
+                      <div
+                        className={`w-[12px] h-[12px] rounded-sm transition-all hover:ring-2 ring-primary/50 cursor-pointer ${getColor(day.count)}`}
+                      />
+                      {/* Tooltip */}
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        whileHover={{ opacity: 1, y: 0 }}
+                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs rounded whitespace-nowrap pointer-events-none z-10 group-hover:block hidden"
+                      >
+                        {day.count} contributions on {day.date.toLocaleDateString()}
+                      </motion.div>
+                    </motion.div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center justify-end gap-2 text-xs">
+        <span className="text-muted-foreground">Less</span>
+        {[0, 2, 4, 6, 8, 10].map((intensity) => (
+          <div key={intensity} className={`w-3 h-3 rounded-sm ${getColor(intensity)}`} />
+        ))}
+        <span className="text-muted-foreground">More</span>
+      </div>
+    </div>
+  )
+}
+
 export function DevShareNumbersSection() {
   const stats = [
     { label: "Active Posts", value: 12847, icon: Activity, suffix: "+" },
@@ -205,10 +317,15 @@ export function DevShareNumbersSection() {
         })}
       </div>
 
+<<<<<<< HEAD
       <Card className="rounded-2xl border p-8 bg-card/50 backdrop-blur shadow-sm">
         <h3 className="font-mono text-xl font-semibold mb-8">
           Global Contributions
         </h3>
+=======
+      <Card className="rounded-2xl border-2 border-primary/20 p-6 bg-card/50 backdrop-blur max-w-6xl mx-auto">
+        <h3 className="font-mono text-lg font-semibold mb-6">Global Contributions</h3>
+>>>>>>> 77e8011b079c598a43d6343e7de0df80116b7430
         <ContributionHeatmap />
       </Card>
     </section>
