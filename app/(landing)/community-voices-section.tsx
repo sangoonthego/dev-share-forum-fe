@@ -118,6 +118,7 @@ const communityVoices: CommunityVoice[] = [
   },
 ]
 
+// Cấu hình Z-pattern trượt chậm và mượt
 const getItemVariants = (index: number) => {
   const rowIndex = Math.floor(index / 3)
   const isFromRight = rowIndex % 2 !== 0
@@ -126,32 +127,23 @@ const getItemVariants = (index: number) => {
     hidden: { 
       opacity: 0, 
       x: isFromRight ? 60 : -60, 
-      y: 20 
+      y: 40,
+      scale: 0.95
     },
     visible: {
       opacity: 1,
       x: 0,
       y: 0,
+      scale: 1,
       transition: {
         type: "spring",
-        stiffness: 45,  
-        damping: 18,    
-        mass: 0.8,
+        stiffness: 45, // Thấp để chuyển động chậm
+        damping: 18,   // Cao để mượt mà, không bị nảy
+        mass: 1,
         velocity: 2
       },
     },
   }
-}
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.18, 
-      delayChildren: 0.3,
-    },
-  },
 }
 
 export function CommunityVoicesSection() {
@@ -171,7 +163,7 @@ export function CommunityVoicesSection() {
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: "all" }}
             transition={{ duration: 0.8 }}
             className="text-sm font-semibold text-primary tracking-widest uppercase"
           >
@@ -181,7 +173,7 @@ export function CommunityVoicesSection() {
           <motion.h2
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: "all" }}
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-4xl md:text-5xl font-bold text-balance"
           >
@@ -191,7 +183,7 @@ export function CommunityVoicesSection() {
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: "all" }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg text-muted-foreground text-balance max-w-2xl mx-auto"
           >
@@ -199,18 +191,15 @@ export function CommunityVoicesSection() {
           </motion.p>
         </div>
 
-        {/* Masonry Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max"
-        >
+        {/* Masonry Grid - Bỏ staggerChildren ở container để Card tự trigger theo viewport */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
           {communityVoices.map((voice, index) => (
             <motion.div
               key={voice.id}
               variants={getItemVariants(index)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: false, amount: 0.2 }}
               className={`group relative ${
                 voice.height === "lg" ? "md:row-span-2 lg:row-span-2" : ""
               } ${voice.height === "sm" ? "md:row-span-1" : ""}`}
@@ -239,7 +228,6 @@ export function CommunityVoicesSection() {
                 />
 
                 <div className="relative z-10 h-full flex flex-col">
-                  {/* Card Header */}
                   <div className="flex items-start justify-between mb-4 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <motion.img
@@ -247,18 +235,14 @@ export function CommunityVoicesSection() {
                         alt={voice.name}
                         className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-white/10"
                         whileHover={{ scale: 1.05 }}
-                        transition={{ type: "spring", stiffness: 300 }}
                       />
-
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1">
                           <p className="font-semibold text-foreground truncate">{voice.name}</p>
                           {voice.verified && (
                             <div
                               className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{
-                                background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
-                              }}
+                              style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)" }}
                             >
                               <span className="text-[8px] font-bold text-white">✓</span>
                             </div>
@@ -269,7 +253,6 @@ export function CommunityVoicesSection() {
                         </p>
                       </div>
                     </div>
-
                     <div className="flex-shrink-0 ml-2">
                       {voice.platform === "X" ? (
                         <svg className="w-4 h-4 text-muted-foreground/60" fill="currentColor" viewBox="0 0 24 24">
@@ -283,12 +266,10 @@ export function CommunityVoicesSection() {
                     </div>
                   </div>
 
-                  {/* Message Content */}
                   <p className="text-sm leading-relaxed text-foreground/80 flex-1 mb-4 italic">
                     "{voice.content}"
                   </p>
 
-                  {/* Footer icon */}
                   <motion.div
                     className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-all duration-500"
                     animate={{ x: hoveredId === voice.id ? 0 : -8 }}
@@ -299,14 +280,14 @@ export function CommunityVoicesSection() {
               </motion.div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Call to Action */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, delay: 0.5 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           className="text-center mt-20"
         >
           <p className="text-muted-foreground mb-6 font-medium">

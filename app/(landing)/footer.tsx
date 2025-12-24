@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Code2, Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Code2, Github, Twitter, Linkedin, Mail, Instagram } from "lucide-react";
 
 export function Footer() {
   const footerSections = [
@@ -49,17 +49,17 @@ export function Footer() {
               collaborate on projects, and build the future together.
             </p>
             <div className="flex gap-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
-              </Link>
               <Link href="https://github.com/sangoonthego" target="_blank" className="text-muted-foreground hover:text-primary transition-colors">
                 <Github className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href="https://www.linkedin.com/in/ntngoc2002/" target="_blank" className="text-muted-foreground hover:text-primary transition-colors">
                 <Linkedin className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
                 <Mail className="h-5 w-5" />
+              </Link>
+              <Link href="https://www.instagram.com/_sango.dono_/" target="_blank" className="text-muted-foreground hover:text-primary transition-colors">
+                <Instagram className="h-5 w-5" />
               </Link>
             </div>
           </div>
@@ -118,7 +118,7 @@ export function Footer() {
         {/* Bottom Area */}
         <div className="mt-1 border-t pt-4 sm:mt-20 lg:mt-10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs leading-5 text-muted-foreground">
-            &copy; {new Date().getFullYear()} Dev Share Forum, Inc. All rights reserved.
+            &copy; {new Date().getFullYear()} DevShare Forum, Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <span>Developed by</span>
