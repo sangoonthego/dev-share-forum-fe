@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { AIChatbotWidget } from "@/components/agentic/ai-chatbot-widget"
+import { MagicBackground } from "@/components/layout/magic-background" 
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -46,9 +47,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased`}>
+      <body className="font-sans antialiased selection:bg-primary/30">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          {/* */}
+          <MagicBackground />
+
+          {/**/}
+          <main className="relative z-10">
+            {children}
+          </main>
+
           <AIChatbotWidget />
         </ThemeProvider>
         <Analytics />
