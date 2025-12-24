@@ -116,14 +116,14 @@ export function ExperienceAgentSection() {
             />
           )}
 
-          <Card className="relative z-10 overflow-hidden border-2 border-white/5 bg-[#0d1117]/80 backdrop-blur-xl shadow-2xl">
-            <div className="bg-muted/20 border-b border-white/5 px-4 py-3 flex items-center gap-2">
+          <Card className="relative z-10 overflow-hidden border-2 border-white/5 dark:bg-[#0d1117]/80 bg-white backdrop-blur-xl shadow-2xl">
+            <div className="dark:bg-muted/20 bg-slate-100 border-b border-white/5 px-4 py-3 flex items-center gap-2">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" />
                 <div className="w-3 h-3 rounded-full bg-green-500" />
               </div>
-              <span className="text-[10px] font-mono text-muted-foreground tracking-widest ml-4 uppercase flex items-center gap-2">
+              <span className="text-[10px] font-mono dark:text-slate-300 text-slate-700 tracking-widest ml-4 uppercase flex items-center gap-2">
                 <Zap className="w-3 h-3 text-yellow-500" /> Neural Analyzer
               </span>
             </div>
@@ -139,7 +139,7 @@ export function ExperienceAgentSection() {
                 />
               )}
 
-              <pre className="text-slate-300 whitespace-pre-wrap">
+              <pre className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                 <code>{codeOutput}</code>
                 {status === "typing" && <motion.span animate={{ opacity: [0, 1] }} transition={{ repeat: Infinity }} className="text-primary">_</motion.span>}
               </pre>
