@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "DevShare Lite - Developer Community Platform",
+  title: "DevShare Forum",
   description: "Share knowledge, code snippets, and collaborate with developers worldwide",
   generator: "v0.app",
   icons: {
