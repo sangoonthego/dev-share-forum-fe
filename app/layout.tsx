@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider"
 import { AIChatbotWidget } from "@/components/agentic/ai-chatbot-widget"
 import { MagicBackground } from "@/components/layout/magic-background" 
 import "./globals.css"
+import { StarBackground } from "@/components/layout/star-background"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -50,8 +51,8 @@ export default function RootLayout({
       <body className="font-sans antialiased selection:bg-primary/30">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {/* */}
-          <MagicBackground />
-
+          {/* <MagicBackground /> */}
+          { <StarBackground />}
           {/**/}
           <main className="relative z-10">
             {children}
