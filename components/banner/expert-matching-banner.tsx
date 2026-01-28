@@ -22,21 +22,21 @@ export function ExpertMatchingBanner({ postId, postTitle, requiredSkills }: Expe
       name: "Alex Kumar",
       avatar: "/programmer.png",
       karma: 2543,
-      matchReason: "Chuyên về Backend & Node.js",
+      matchReason: "Specializing in Backend & Node.js",
     },
     {
       username: "sarahchen",
       name: "Sarah Chen",
       avatar: "/developer-working.png",
       karma: 1876,
-      matchReason: "Expert về Real-time Systems",
+      matchReason: "Expert in Real-time Systems",
     },
     {
       username: "jameswilson",
       name: "James Wilson",
       avatar: "/diverse-engineers-meeting.png",
       karma: 1234,
-      matchReason: "Có 15 bài về WebSocket",
+      matchReason: "There are 15 articles about WebSocket",
     },
   ]
 
@@ -52,9 +52,9 @@ export function ExpertMatchingBanner({ postId, postTitle, requiredSkills }: Expe
           <div>
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h3 className="font-semibold text-sm">AI đã tìm thấy chuyên gia phù hợp!</h3>
+                <h3 className="font-semibold text-sm">AI has found the proper expert!</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Dựa trên nội dung bài viết, những người này có thể giúp bạn:
+                  Based on the article content, these people can help you:
                 </p>
               </div>
               <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => setDismissed(true)}>
@@ -99,7 +99,7 @@ export function ExpertMatchingBanner({ postId, postTitle, requiredSkills }: Expe
           </div>
 
           <p className="text-xs text-muted-foreground">
-            AI sẽ tự động gửi thông báo cá nhân hóa đến những chuyên gia này.
+            AI will automatically send personalized notifications to these experts.
           </p>
         </div>
       </div>

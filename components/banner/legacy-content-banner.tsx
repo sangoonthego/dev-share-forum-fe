@@ -19,17 +19,17 @@ export function LegacyContentBanner({ publishedDate, outdatedInfo }: LegacyConte
       </AlertTitle>
       <AlertDescription className="mt-2">
         <p className="text-sm">
-          Bài viết này được xuất bản vào <strong>{publishedDate}</strong> (hơn 2 năm trước). AI đã phát hiện một số
-          thông tin có thể đã lỗi thời.
+          This article was published on <strong>{publishedDate}</strong> (more than 2 years ago). AI has detected some
+          information may be out of date.
         </p>
         {outdatedInfo && (
           <div className="mt-3 p-3 rounded-lg bg-background/50 text-sm">
-            <p className="font-medium mb-1">Cập nhật từ AI:</p>
+            <p className="font-medium mb-1">Update from AI:</p>
             <p className="text-muted-foreground">{outdatedInfo}</p>
           </div>
         )}
         <Button size="sm" variant="outline" className="mt-3 active:scale-95 transition-transform bg-transparent">
-          Xem phiên bản cập nhật
+          See updated version
         </Button>
       </AlertDescription>
     </Alert>

@@ -81,26 +81,26 @@ export function AIChatbotWidget() {
   const getAIResponse = (query: string): string => {
     const lowerQuery = query.toLowerCase()
     if (lowerQuery.includes("tóm tắt") || lowerQuery.includes("summarize")) {
-      return "Tôi đã phân tích bài viết hiện tại. Đây là bản tóm tắt: Bài viết hướng dẫn xây dựng ứng dụng real-time chat với Next.js và WebSockets, bao gồm setup, implementation và deployment. Các điểm chính: kết nối WebSocket, xử lý message, và tối ưu hiệu suất."
+      return "I have analyzed the current article. Here is the summary: The article provides instructions on building a real-time chat application with Next.js and WebSockets, including setup, implementation and deployment. Key points: WebSocket connections, message handling, and performance optimization."
     }
     if (lowerQuery.includes("chuyên gia") || lowerQuery.includes("expert")) {
-      return "Tôi đã tìm thấy 3 chuyên gia Node.js có Karma cao:\n\n1. **@alexkumar** - 2.5k Karma, chuyên về Backend\n2. **@sarahchen** - 1.8k Karma, chuyên về Full-stack\n3. **@jameswilson** - 1.2k Karma, chuyên về API Design\n\nTôi có thể gửi thông báo mời họ tham gia thảo luận không?"
+      return "I found 3 Node.js experts with high Karma:\n\n1. **@alexkumar** - 2.5k Karma, specializing in Backend\n2. **@sarahchen** - 1.8k Karma, specializing in Full-stack\n3. **@jameswilson** - 1.2k Karma, specializing in API Design\n\nCan I send them an announcement inviting them to join the discussion?"
     }
     if (lowerQuery.includes("code") || lowerQuery.includes("lỗi")) {
-      return "Tôi đã kiểm tra code blocks trong bài viết:\n\n✅ WebSocket hook: Syntax đúng, nhưng nên thêm error handling\n⚠️ TypeScript types: Thiếu interface cho Message\n✅ useEffect cleanup: Đã implement đúng\n\nBạn có muốn tôi suggest code improvements không?"
+      return "I checked the code blocks in the article:\n\n✅ WebSocket hook: Syntax is correct, but error handling should be added\n⚠️ TypeScript types: Missing interface for Message\n✅ useEffect cleanup: Correctly implemented\n\nDo you want me to suggest code improvements?"
     }
     if (lowerQuery.includes("tag")) {
-      return "Dựa trên nội dung, tôi đề xuất các tags sau:\n\n#Real-time #WebSocket #Next.js #TypeScript #Tutorial #Chat-App\n\nCác tags này sẽ giúp bài viết được tìm thấy dễ hơn trong community."
+      return "Based on the content, I recommend the following tags:\n\n#Real-time #WebSocket #Next.js #TypeScript #Tutorial #Chat-App\n\nThese tags will help the article be found more easily in the community."
     }
-    return "Tôi hiểu bạn cần hỗ trợ. Bạn có thể hỏi tôi về:\n- Tóm tắt bài viết\n- Tìm chuyên gia phù hợp\n- Kiểm tra lỗi code\n- Gợi ý tags và tiêu đề\n- Tối ưu SEO"
+    return "I understand you need support. You can ask me about:\n- Article summary\n- Finding the right expert\n- Checking code errors\n- Suggested tags and titles\n- SEO optimization"
   }
 
   const handleQuickAction = (action: string) => {
     const actionMap: Record<string, string> = {
-      summarize: "Hãy tóm tắt bài viết này cho tôi",
-      "find-expert": "Tìm chuyên gia Node.js giúp tôi",
-      "check-code": "Kiểm tra lỗi code trong bài viết",
-      "suggest-tags": "Gợi ý tags phù hợp cho bài viết",
+      summarize: "Please summarize this article for me",
+      "find-expert": "Find a Node.js expert to help me",
+      "check-code": "Check for code errors in the article",
+      "suggest-tags": "Suggest suitable tags for the article",
     }
     handleSend(actionMap[action])
   }

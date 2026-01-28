@@ -22,7 +22,7 @@ export default function AIDemoPage() {
               <h1 className="font-mono text-4xl font-bold">Agentic AI System</h1>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Trải nghiệm hệ thống AI Agent tự động hóa và hỗ trợ cộng đồng DevShare
+              Experience the AI ​​Agent system that automates and supports the DevShare community
             </p>
             <div className="flex items-center justify-center gap-2">
               <Badge variant="secondary" className="gap-1">
@@ -44,14 +44,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">AI Chatbot Widget</CardTitle>
-                    <CardDescription>Hỗ trợ 24/7 với floating assistant</CardDescription>
+                    <CardDescription>24/7 support with floating assistant</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Chatbot thông minh giúp tóm tắt bài viết, tìm chuyên gia, kiểm tra code và gợi ý SEO. Responsive hoàn
-                  toàn với mobile drawer và desktop popover.
+                  Smart chatbot helps summarize articles, find experts, check code and give SEO suggestions. Fully responsive with mobile drawer and desktop popover.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -64,7 +63,7 @@ export default function AIDemoPage() {
                     Context-aware
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">Xem widget ở góc dưới bên phải màn hình</p>
+                <p className="text-xs text-muted-foreground">See the widget in the lower right corner of the screen</p>
               </CardContent>
             </Card>
 
@@ -77,14 +76,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Expert Matching Agent</CardTitle>
-                    <CardDescription>Kết nối tự động với chuyên gia</CardDescription>
+                    <CardDescription>Connect automatically with experts</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  AI phân tích kỹ năng cần thiết từ bài viết và tự động tìm top 3 experts có Karma cao nhất. Gửi
-                  notification cá nhân hóa để mời họ tham gia.
+                  AI analyzes the necessary skills from the article and automatically finds the top 3 experts with the highest Karma. Send personalized notifications to invite them to participate.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -109,14 +107,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Smart Editor Assistant</CardTitle>
-                    <CardDescription>Cải thiện nội dung tự động</CardDescription>
+                    <CardDescription>Improve content automatically</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Phân tích sau 2 giây ngừng gõ: Code audit, SEO optimization, auto-tagging, và gợi ý bài viết liên quan
-                  để chèn link.
+                  Analysis after 2 seconds of stopping typing: Code audit, SEO optimization, auto-tagging, and suggested related articles to insert links.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -141,14 +138,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Auto Moderator</CardTitle>
-                    <CardDescription>Bảo vệ cộng đồng 24/7</CardDescription>
+                    <CardDescription>Protect the community 24/7</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Quét nội dung trước khi publish, phát hiện spam, mã độc và theo dõi sentiment trong comments. Tự động
-                  can thiệp khi tranh cãi nóng lên.
+                  Scan content before publishing, detect spam, malicious code and monitor sentiment in comments. Automatically intervene when arguments heat up.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -173,14 +169,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">AI Curator & Newsletter</CardTitle>
-                    <CardDescription>Tổng hợp nội dung hàng ngày</CardDescription>
+                    <CardDescription>Synthesize daily content</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Cron job chạy hàng ngày để tổng hợp 10 bài viết hot nhất thành Daily DevShare Newsletter. Tự động phân
-                  tích và tạo summary.
+                  Cron job runs every day to synthesize the 10 hottest articles into Daily DevShare Newsletter. Automatically analyze and create summary.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -205,14 +200,13 @@ export default function AIDemoPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Self-Evolving RAG Agent</CardTitle>
-                    <CardDescription>Cập nhật nội dung cũ tự động</CardDescription>
+                    <CardDescription>Update old content automatically</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Kiểm tra bài viết cũ hơn 2 năm, so sánh với kiến thức mới qua Web Search. Tự động đánh dấu "Legacy" và
-                  thêm banner cảnh báo nếu lỗi thời.
+                  Check articles older than 2 years, compare with new knowledge via Web Search. Automatically mark "Legacy" and add a warning banner if outdated.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="text-xs">
@@ -243,11 +237,11 @@ export default function AIDemoPage() {
 
             <ModerationAlert
               type="warning"
-              title="Nội dung cần xem xét"
-              message="AI đã phát hiện một số vấn đề trong bài viết của bạn. Vui lòng kiểm tra và chỉnh sửa trước khi publish."
+              title="Content to consider"
+              message="AI has detected some problems in your article. Please check and edit before publishing."
               issues={[
-                { line: 42, issue: "Phát hiện từ ngữ có thể gây tranh cãi" },
-                { line: 78, issue: "Link không an toàn (http://)" },
+                { line: 42, issue: "Detecting potentially controversial words" },
+                { line: 78, issue: "Unsafe link (http://)" },
               ]}
             />
 
@@ -255,7 +249,7 @@ export default function AIDemoPage() {
 
             <LegacyContentBanner
               publishedDate="Jan 15, 2022"
-              outdatedInfo="React 19 đã release với nhiều tính năng mới. Server Components giờ đã stable. Xem bài viết cập nhật về React 19 features."
+              outdatedInfo="React 19 has been released with many new features. Server Components are now stable. See updated article about React 19 features."
             />
           </div>
 
@@ -263,7 +257,7 @@ export default function AIDemoPage() {
           <Card>
             <CardHeader>
               <CardTitle>System Architecture</CardTitle>
-              <CardDescription>Cách các AI Agents hoạt động và tương tác</CardDescription>
+              <CardDescription>How AI Agents work and interact</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
