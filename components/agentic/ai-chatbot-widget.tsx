@@ -17,10 +17,10 @@ interface Message {
 }
 
 const QUICK_ACTIONS = [
-  { label: "Tóm tắt bài viết này", action: "summarize" },
-  { label: "Tìm chuyên gia Node.js", action: "find-expert" },
-  { label: "Kiểm tra lỗi code", action: "check-code" },
-  { label: "Gợi ý tags phù hợp", action: "suggest-tags" },
+  { label: "Summary of this article", action: "summarize" },
+  { label: "Find a Node.js expert", action: "find-expert" },
+  { label: "Check code errors", action: "check-code" },
+  { label: "Suggest suitable tags", action: "suggest-tags" },
 ]
 
 export function AIChatbotWidget() {
