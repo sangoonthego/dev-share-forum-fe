@@ -30,7 +30,7 @@ export function AIChatbotWidget() {
       id: "welcome",
       role: "assistant",
       content:
-        "Xin chào! Tôi là DevShare AI Assistant. Tôi có thể giúp bạn tìm chuyên gia, kiểm tra code, hoặc cải thiện bài viết. Bạn cần tôi giúp gì?",
+        "Hello! I'm DevShare AI Assistant. I can help you find experts, test your code, or improve your articles. What do you need my help with?",
       timestamp: new Date(),
     },
   ])
