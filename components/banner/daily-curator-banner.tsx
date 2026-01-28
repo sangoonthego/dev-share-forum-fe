@@ -18,16 +18,16 @@ export function DailyCuratorBanner() {
             <h4 className="font-semibold text-sm">Daily DevShare Newsletter</h4>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            AI đã tổng hợp 10 bài viết hay nhất hôm nay. Đọc ngay để cập nhật kiến thức mới nhất!
+            AI has compiled the top 10 articles today. Read right now to acquire the latest knowledge!!!
           </p>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" asChild className="active:scale-95 transition-transform bg-transparent">
               <Link href="/newsletter/daily">
                 <Eye className="h-3 w-3 mr-1" />
-                Xem bản tin
+                View Newsletter
               </Link>
             </Button>
-            <span className="text-xs text-muted-foreground">Được tạo bởi AI Curator</span>
+            {/* <span className="text-xs text-muted-foreground">Created by AI Curator</span> */}
           </div>
         </div>
       </div>
