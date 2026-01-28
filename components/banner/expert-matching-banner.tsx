@@ -92,7 +92,7 @@ export function ExpertMatchingBanner({ postId, postTitle, requiredSkills }: Expe
                   variant="outline"
                   className="text-xs h-7 active:scale-95 transition-transform bg-transparent"
                 >
-                  Mời tham gia
+                  Invite to participate
                 </Button>
               </div>
             ))}
