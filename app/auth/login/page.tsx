@@ -3,35 +3,39 @@
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation" // 1. Import useRouter
+import { useRouter } from "next/navigation"
 import { Github, Chrome, Code2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("") 
-  
-  const router = useRouter() 
+  const router = useRouter()
+  const { login, loginWithOAuth } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError("")
+    setIsLoading(true)
 
-    setTimeout(() => {
-      if (email === "host@gmail.com" && password === "host") {
-        console.log("Login Success!")
-        router.push("/home") 
-      } else {
-        setError("Email hoặc mật khẩu không đúng!")
-        setIsLoading(false)
-      }
-    }, 1000)
+    try {
+      await login({ email, password })
+      router.push("/home")
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Login failed"
+      setError(errorMsg)
+      setIsLoading(false)
+    }
+  }
+
+  const handleOAuthLogin = (provider: "google" | "github") => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/${provider}`
   }
 
   return (
@@ -97,11 +101,43 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" disabled={isLoading} className="w-full h-11 text-base font-semibold">
-              {isLoading ? "Checking..." : "Sign In"}
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
           {/* Social Auth & Links*/}
+          <div className="mt-6 space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 text-base font-medium gap-2 bg-transparent"
+                onClick={() => handleOAuthLogin("github")}
+              >
+                <Github size={18} />
+                GitHub
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 text-base font-medium gap-2 bg-transparent"
+                onClick={() => handleOAuthLogin("google")}
+              >
+                <Chrome size={18} />
+                Google
+              </Button>
+            </div>
+          </div>
+
           <div className="text-center mt-6 pt-6 border-t">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}

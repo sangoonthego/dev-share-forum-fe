@@ -1,16 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
-import { Github, Chrome } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Github, Chrome, Code2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Code2 } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -19,13 +19,34 @@ export default function SignupPage() {
     password: "",
     newsletter: false,
   })
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
-    // Simulate signup
-    setTimeout(() => setIsLoading(false), 1000)
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.name,
+      })
+      // Success alert
+      alert("✅ Đăng ký thành công! Vui lòng đăng nhập.")
+      router.push("/auth/login")
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Registration failed"
+      setError(errorMsg)
+      setIsLoading(false)
+    }
+  }
+
+  const handleOAuthSignup = (provider: "google" | "github") => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/${provider}`
   }
 
   return (
@@ -44,11 +65,21 @@ export default function SignupPage() {
 
           {/* Social Auth */}
           <div className="space-y-3 mb-6">
-            <Button variant="outline" className="w-full h-12 text-base font-medium gap-2 bg-transparent">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 text-base font-medium gap-2 bg-transparent"
+              onClick={() => handleOAuthSignup("github")}
+            >
               <Github size={18} />
               Continue with GitHub
             </Button>
-            <Button variant="outline" className="w-full h-12 text-base font-medium gap-2 bg-transparent">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 text-base font-medium gap-2 bg-transparent"
+              onClick={() => handleOAuthSignup("google")}
+            >
               <Chrome size={18} />
               Continue with Google
             </Button>
@@ -66,6 +97,11 @@ export default function SignupPage() {
 
           {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm bg-destructive/10 text-destructive rounded-md border border-destructive/20 text-center">
+                {error}
+              </div>
+            )}
             <div>
               <Label htmlFor="name" className="text-sm font-medium mb-2 block">
                 Full Name
@@ -124,8 +160,6 @@ export default function SignupPage() {
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
-
-          {/* Sign In Link */}
           <div className="text-center mt-6 pt-6 border-t">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
