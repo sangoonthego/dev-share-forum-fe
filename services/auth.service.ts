@@ -1,202 +1,127 @@
-/**
- * Authentication Service
- * Handles all auth-related API calls and business logic
- * 
- * Pattern: Service Layer
- * Responsibility: API calls, data transformation via mappers, business logic
- * 
- * Flow: Component → Hook → Service → Mapper → API Client
- */
-
-import { apiClient, handleApiError, getErrorDetails } from '@/lib/api-client'
-import type {
-  LoginResponse,
-  SignupResponse,
-  LoginCredentials,
-  SignupData,
-  AuthUser,
-  ApiResponse,
-} from '@/types'
+import apiClient, { setAccessToken, clearAccessToken } from "@/lib/api-client";
 import {
-  mapLoginResponse,
-  mapSignupResponse,
-} from '@/mappers/auth.mapper'
+  mapUserProfileResponse,
+  User,
+  UserProfileResponse,
+  LoginResponse,
+  RegisterResponse,
+  ChangePasswordResponse,
+} from "@/mappers/auth.mapper";
 
 /**
- * Authentication Service Class
- * Encapsulates all auth-related operations
+ * Request DTOs (matching backend contracts)
  */
+interface LoginDto {
+  email: string;
+  password: string;
+}
+
+interface RegisterDto {
+  email: string;
+  password: string;
+  full_name?: string;
+  phone?: string;
+}
+
+interface ChangePasswordDto {
+  current_password: string;
+  new_password: string;
+  new_password_confirm: string;
+}
+
 class AuthService {
-  private readonly baseURL = '/auth'
+  private readonly baseURL = "/auth";
 
-  /**
-   * Login user with email and password
-   * 
-   * @param credentials - User login credentials
-   * @returns Promise with auth user, token, and refresh token
-   * @throws Error with user-friendly message
-   */
-  async login(
-    credentials: LoginCredentials
-  ): Promise<{
-    user: AuthUser
-    token: string
-    refreshToken: string
-  }> {
+  async register(dto: RegisterDto): Promise<RegisterResponse> {
     try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>(
+      const response = await apiClient.post<RegisterResponse>(
+        `${this.baseURL}/register`,
+        dto
+      );
+
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, "Registration failed");
+    }
+  }
+
+  async login(dto: LoginDto): Promise<string> {
+    try {
+      const response = await apiClient.post<LoginResponse>(
         `${this.baseURL}/login`,
-        credentials
-      )
+        dto
+      );
 
-      const { user, token, refreshToken } = mapLoginResponse(response.data.data)
+      const { access_token } = response.data;
 
-      // Store tokens in localStorage for persistence
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', token)
-        localStorage.setItem('refresh_token', refreshToken)
-      }
+      // Store access token in memory (via api-client)
+      setAccessToken(access_token);
 
-      return { user, token, refreshToken }
+      return access_token;
     } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Login failed')
+      throw this.handleError(error, "Login failed");
     }
   }
 
-  /**
-   * Sign up new user
-   * 
-   * @param data - User signup data
-   * @returns Promise with auth user, token, and refresh token
-   * @throws Error with user-friendly message
-   */
-  async signup(
-    data: SignupData
-  ): Promise<{
-    user: AuthUser
-    token: string
-    refreshToken: string
-  }> {
-    try {
-      const response = await apiClient.post<ApiResponse<SignupResponse>>(
-        `${this.baseURL}/signup`,
-        data
-      )
-
-      const { user, token, refreshToken } = mapSignupResponse(response.data.data)
-
-      // Store tokens in localStorage for persistence
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', token)
-        localStorage.setItem('refresh_token', refreshToken)
-      }
-
-      return { user, token, refreshToken }
-    } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Signup failed')
-    }
-  }
-
-  /**
-   * Logout user and clear tokens
-   */
   async logout(): Promise<void> {
     try {
-      await apiClient.post(`${this.baseURL}/logout`)
+      await apiClient.post(`${this.baseURL}/logout`);
     } catch (error) {
-      console.error('Logout error:', handleApiError(error))
+      console.error("Logout error:", error);
+      // Continue clearing local state even if API call fails
     } finally {
-      // Always clear tokens locally
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('refresh_token')
+      clearAccessToken();
+    }
+  }
+
+  async getMe(): Promise<User> {
+    try {
+      const response = await apiClient.get<UserProfileResponse>(
+        `${this.baseURL}/me`
+      );
+
+      return mapUserProfileResponse(response.data);
+    } catch (error) {
+      // If 401, session expired - api-client interceptor handles refresh
+      throw this.handleError(error, "Failed to fetch user profile");
+    }
+  }
+
+  async changePassword(dto: ChangePasswordDto): Promise<ChangePasswordResponse> {
+    try {
+      const response = await apiClient.post<ChangePasswordResponse>(
+        `${this.baseURL}/change-password`,
+        dto
+      );
+
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, "Password change failed");
+    }
+  }
+
+  private handleError(error: unknown, defaultMessage: string): never {
+    if (error instanceof Error) {
+      // Axios error
+      if ("response" in error && typeof error.response === "object" && error.response !== null) {
+        const response = error.response as any;
+        const message = response.data?.message || response.data?.error || defaultMessage;
+        throw new Error(message);
       }
+      // Generic error
+      throw new Error(error.message || defaultMessage);
     }
-  }
-
-  /**
-   * Refresh authentication token
-   * 
-   * @returns Promise with new token
-   */
-  async refreshToken(): Promise<string> {
-    try {
-      const refreshToken =
-        typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null
-
-      if (!refreshToken) {
-        throw new Error('No refresh token available')
-      }
-
-      const response = await apiClient.post<ApiResponse<{ token: string }>>(
-        `${this.baseURL}/refresh`,
-        { refreshToken }
-      )
-
-      const newToken = response.data.data.token
-
-      // Update token in localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', newToken)
-      }
-
-      return newToken
-    } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Token refresh failed')
-    }
-  }
-
-  /**
-   * Request password reset
-   * 
-   * @param email - User email
-   */
-  async requestPasswordReset(email: string): Promise<void> {
-    try {
-      await apiClient.post(`${this.baseURL}/forgot-password`, { email })
-    } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Password reset request failed')
-    }
-  }
-
-  /**
-   * Reset password with token
-   * 
-   * @param token - Password reset token
-   * @param newPassword - New password
-   */
-  async resetPassword(token: string, newPassword: string): Promise<void> {
-    try {
-      await apiClient.post(`${this.baseURL}/reset-password`, {
-        token,
-        newPassword,
-      })
-    } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Password reset failed')
-    }
-  }
-
-  /**
-   * Verify email with token
-   * 
-   * @param token - Email verification token
-   */
-  async verifyEmail(token: string): Promise<void> {
-    try {
-      await apiClient.post(`${this.baseURL}/verify-email`, { token })
-    } catch (error) {
-      const { message } = getErrorDetails(error)
-      throw new Error(message || 'Email verification failed')
-    }
+    // Unknown error
+    throw new Error(defaultMessage);
   }
 }
 
-// Export singleton instance
-export const authService = new AuthService()
+const authService = new AuthService();
 
-export default authService
+export const register = authService.register.bind(authService);
+export const login = authService.login.bind(authService);
+export const logout = authService.logout.bind(authService);
+export const getMe = authService.getMe.bind(authService);
+export const changePassword = authService.changePassword.bind(authService);
+
+export default authService;
