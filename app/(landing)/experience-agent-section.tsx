@@ -47,14 +47,14 @@ export function ExperienceAgentSection() {
     setLogs((prev) => [...prev, "Analyzing call stack...", "Identifying memory patterns..."])
     
     setTimeout(() => {
-       setLogs((prev) => [...prev, "⚠️ Error: Floating Promise detected"])
+       setLogs((prev) => [...prev, "*Error: Floating Promise detected"])
     }, 1000)
   }
 
   const applyFix = () => {
     setStatus("fixed")
     setCodeOutput(fixedCode)
-    setLogs((prev) => [...prev, "✅ Fix applied: Await added to json()"])
+    setLogs((prev) => [...prev, "$Fix applied: Await added to json()"])
   }
 
   return (
@@ -91,8 +91,8 @@ export function ExperienceAgentSection() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             className={`p-2 rounded border text-[10px] font-mono ${
-                                log.includes('⚠️') ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' :
-                                log.includes('✅') ? 'bg-green-500/10 border-green-500/20 text-green-500' :
+                                log.includes('*') ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' :
+                                log.includes('$') ? 'bg-green-500/10 border-green-500/20 text-green-500' :
                                 'bg-muted/30 border-white/5 text-muted-foreground'
                             }`}
                         >
@@ -116,7 +116,8 @@ export function ExperienceAgentSection() {
             />
           )}
 
-          <Card className="relative z-10 overflow-hidden border-2 border-white/5 dark:bg-[#0d1117]/80 bg-white backdrop-blur-xl shadow-2xl">
+          <Card className="relative z-10 overflow-hidden border-2">
+          {/* <Card className="relative z-10 overflow-hidden border-2 border-white/5 dark:bg-[#0d1117]/80 bg-white backdrop-blur-xl shadow-2xl"></Card> */}
             <div className="dark:bg-muted/20 bg-slate-100 border-b border-white/5 px-4 py-3 flex items-center gap-2">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
