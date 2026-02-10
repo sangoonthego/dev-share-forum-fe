@@ -14,15 +14,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "../theme/theme-toggle"
+import { useAuth } from "@/hooks/useAuth"
 
 export function TopNavbar() {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
 
   const navItems = [
     { icon: LayoutGrid, label: "Event", href: "/events" },
     { icon: Calendar, label: "Calendar", href: "/calendar" },
     { icon: Compass, label: "Explore", href: "/explore" },
   ]
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
+  // Get avatar initials
+  const getInitials = (name: string | undefined) => {
+    if (!name) return "NN"
+    return name
+      .split(" ")
+      .map(n => n.charAt(0))
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full border-0 items-center justify-between bg-card/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -72,8 +89,8 @@ export function TopNavbar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all">
-              <AvatarImage src="https://i.pravatar.cc/150?u=sangoo" />
-              <AvatarFallback>NN</AvatarFallback>
+              <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
+              <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           
@@ -84,12 +101,12 @@ export function TopNavbar() {
             {/* Header nằm ngang (Horizontal) */}
             <div className="bg-[#24263a] p-4 flex flex-row items-center gap-4 border-b border-[#2f3146]">
               <Avatar className="h-12 w-12 ring-2 ring-primary/20 flex-shrink-0">
-                <AvatarImage src="https://i.pravatar.cc/150?u=sangoo" />
-                <AvatarFallback>NN</AvatarFallback>
+                <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
+                <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">Nguyen Tuan Ngoc</p>
-                <p className="text-xs text-slate-400 mt-1 truncate">knkidngoc@gmail.com</p>
+                <p className="text-sm font-bold text-white truncate">{user?.name || "User"}</p>
+                <p className="text-xs text-slate-400 mt-1 truncate">{user?.email || "email@example.com"}</p>
               </div>
             </div>
 
@@ -110,11 +127,12 @@ export function TopNavbar() {
 
               <DropdownMenuSeparator className="bg-[#2f3146] my-2" />
 
-              <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-400 text-red-400 cursor-pointer py-2.5 px-3 rounded-lg mb-1 transition-colors">
-                <Link href="/" className="flex w-full items-center">
-                  <LogOut className="mr-4 h-4 w-4" />
-                  <span className="text-sm">Log out</span>
-                </Link>
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                className="focus:bg-red-500/10 focus:text-red-400 text-red-400 cursor-pointer py-2.5 px-3 rounded-lg mb-1 transition-colors"
+              >
+                <LogOut className="mr-4 h-4 w-4" />
+                <span className="text-sm">Log out</span>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>
