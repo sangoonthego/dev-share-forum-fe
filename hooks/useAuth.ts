@@ -1,207 +1,189 @@
-/**
- * useAuth Hook
- * Custom hook for managing authentication state and operations
- * 
- * Pattern: Hooks consume Services
- * Responsibility: State management, service orchestration, error handling for UI
- * 
- * Usage Example:
- * const { user, login, signup, logout, isLoading, error } = useAuth()
- * 
- * Full Flow:
- * UI Component → useAuth Hook → Auth Service → API Client → Backend
- *                                    ↓
- *                            Auth Mapper
- *                                    ↓
- *                           Frontend Types
- */
+import { useState, useEffect, useCallback, useRef } from "react";
+import * as authService from "@/services/auth.service";
+import { setAccessToken, getAccessToken, clearAccessToken } from "@/lib/api-client";
+import { useRouter } from "next/navigation";
+import { mapOAuthUserResponse, mapUserProfileResponse, User } from "@/mappers/auth.mapper";
 
-'use client'
+interface UseAuthResult {
+  // State
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 
-import { useState, useCallback, useEffect } from 'react'
-import { authService } from '@/services/auth.service'
-import type {
-  AuthState,
-  AuthUser,
-  LoginCredentials,
-  SignupData,
-} from '@/types'
+  // Operations
+  login: (dto: { email: string; password: string }) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (dto: { email: string; password: string; full_name?: string; phone?: string }) => Promise<void>;
+  changePassword: (dto: { current_password: string; new_password: string; new_password_confirm: string }) => Promise<void>;
 
-/**
- * Hook return type for better IDE support
- */
-interface UseAuthReturn {
-  user: AuthUser | null
-  token: string | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  error: string | null
-  login: (credentials: LoginCredentials) => Promise<void>
-  signup: (data: SignupData) => Promise<void>
-  logout: () => Promise<void>
-  clearError: () => void
+  // OAuth
+  handleOAuthCallback: () => Promise<void>;
+
+  // Utilities
+  refetch: () => Promise<void>;
 }
 
-/**
- * useAuth Hook Implementation
- */
-export const useAuth = (): UseAuthReturn => {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    token: null,
-    refreshToken: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
-  })
+export function useAuth(): UseAuthResult {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setLoading] = useState(true);
+  const router = useRouter();
+  const initializeRef = useRef(false);
 
-  /**
-   * Initialize auth state from localStorage on mount
-   */
+  const fetchMe = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    try {
+      const me = await authService.getMe();
+      setUser(me);
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+      setUser(null);
+      clearAccessToken();
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const initializeAuth = () => {
-      if (typeof window !== 'undefined') {
-        const storedToken = localStorage.getItem('auth_token')
-        const storedUser = localStorage.getItem('auth_user')
+    // SSR check
+    if (typeof window === "undefined") return;
 
-        if (storedToken && storedUser) {
-          try {
-            const user = JSON.parse(storedUser) as AuthUser
-            setAuthState((prev) => ({
-              ...prev,
-              user,
-              token: storedToken,
-              isAuthenticated: true,
-            }))
-          } catch {
-            // Invalid stored data, clear it
-            localStorage.removeItem('auth_token')
-            localStorage.removeItem('auth_user')
-          }
-        }
-      }
+    // Prevent double initialization
+    if (initializeRef.current) return;
+    initializeRef.current = true;
+
+    const token = getAccessToken();
+    if (token) {
+      // Token exists, fetch user profile
+      fetchMe();
+    } else {
+      // No token, skip to ready state
+      setLoading(false);
+    }
+  }, [fetchMe]);
+
+  const login = async (dto: { email: string; password: string }): Promise<void> => {
+    setLoading(true);
+    try {
+      // Login returns access_token
+      const token = await authService.login(dto);
+
+      // Token stored in memory via api-client
+      setAccessToken(token);
+
+      // Fetch and set user
+      await fetchMe();
+    } catch (error) {
+      setUser(null);
+      clearAccessToken();
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      await authService.logout();
+    } finally {
+      clearAccessToken();
+      setUser(null);
+      setLoading(false);
+      router.push("/auth/login");
+    }
+  };
+
+  const register = async (dto: {
+    email: string;
+    password: string;
+    full_name?: string;
+    phone?: string;
+  }): Promise<void> => {
+    setLoading(true);
+    try {
+      await authService.register(dto);
+      // User registered, redirect to login for authentication
+      router.push("/auth/login?registered=true");
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  const changePassword = async (dto: {
+    current_password: string;
+    new_password: string;
+    new_password_confirm: string;
+  }): Promise<void> => {
+    setLoading(true);
+    try {
+      await authService.changePassword(dto);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOAuthCallback = useCallback(async (): Promise<void> => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    const accessToken = url.searchParams.get("access_token");
+    const provider = url.searchParams.get("provider");
+    const error = url.searchParams.get("error");
+
+    // Check for OAuth error
+    if (error) {
+      console.error(`OAuth ${provider} error:`, error);
+      clearAccessToken();
+      setUser(null);
+      router.replace("/auth/login?error=oauth_failed");
+      return;
     }
 
-    initializeAuth()
-  }, [])
-
-  /**
-   * Login handler
-   */
-  const login = useCallback(async (credentials: LoginCredentials): Promise<void> => {
-    setAuthState((prev) => ({ ...prev, isLoading: true, error: null }))
+    // Validate we have access token
+    if (!accessToken) {
+      console.error("OAuth callback missing access_token");
+      clearAccessToken();
+      setUser(null);
+      router.replace("/auth/login?error=oauth_invalid");
+      return;
+    }
 
     try {
-      const { user, token, refreshToken } = await authService.login(credentials)
+      // Store access token in memory
+      setAccessToken(accessToken);
 
-      // Store user data for persistence
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_user', JSON.stringify(user))
-      }
+      // Fetch user profile with new token
+      await fetchMe();
 
-      setAuthState((prev) => ({
-        ...prev,
-        user,
-        token,
-        refreshToken,
-        isAuthenticated: true,
-        isLoading: false,
-      }))
+      // Clear URL params and redirect to home
+      router.replace("/");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed'
-      setAuthState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }))
-      throw error
+      console.error("OAuth callback failed:", error);
+      clearAccessToken();
+      setUser(null);
+      router.replace("/auth/login?error=oauth_failed");
     }
-  }, [])
+  }, [fetchMe, router]);
 
-  /**
-   * Signup handler
-   */
-  const signup = useCallback(async (data: SignupData): Promise<void> => {
-    setAuthState((prev) => ({ ...prev, isLoading: true, error: null }))
-
-    try {
-      const { user, token, refreshToken } = await authService.signup(data)
-
-      // Store user data for persistence
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_user', JSON.stringify(user))
-      }
-
-      setAuthState((prev) => ({
-        ...prev,
-        user,
-        token,
-        refreshToken,
-        isAuthenticated: true,
-        isLoading: false,
-      }))
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Signup failed'
-      setAuthState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }))
-      throw error
-    }
-  }, [])
-
-  /**
-   * Logout handler
-   */
-  const logout = useCallback(async (): Promise<void> => {
-    setAuthState((prev) => ({ ...prev, isLoading: true }))
-
-    try {
-      await authService.logout()
-
-      // Clear stored user data
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_user')
-      }
-
-      setAuthState({
-        user: null,
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-      })
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Logout failed'
-      setAuthState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }))
-      throw error
-    }
-  }, [])
-
-  /**
-   * Clear error message
-   */
-  const clearError = useCallback(() => {
-    setAuthState((prev) => ({ ...prev, error: null }))
-  }, [])
+  const refetch = fetchMe;
 
   return {
-    user: authState.user,
-    token: authState.token,
-    isAuthenticated: authState.isAuthenticated,
-    isLoading: authState.isLoading,
-    error: authState.error,
-    login,
-    signup,
-    logout,
-    clearError,
-  }
-}
+    // State
+    user,
+    isAuthenticated: !!user,
+    isLoading,
 
-export default useAuth
+    // Operations
+    login,
+    logout,
+    register,
+    changePassword,
+
+    // OAuth
+    handleOAuthCallback,
+
+    // Utilities
+    refetch,
+  };
+}
