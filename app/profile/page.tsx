@@ -8,10 +8,12 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("posts");
   const [mounted, setMounted] = useState(false);
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -59,7 +61,25 @@ export default function UserProfile() {
   ];
 
   // Nếu chưa mounted (đang ở server), render một placeholder hoặc null để tránh lỗi Hydration
-  if (!mounted) return null;
+  if (!mounted || isLoading) return null;
+
+  if (!user) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Please log in to view profile</h2>
+            <a href="/auth/login" className="text-blue-600 hover:underline">Go to login</a>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Format joined date
+  const joinedDate = user.createdAt 
+    ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })
+    : "Unknown";
 
   return (
     <AppLayout>
@@ -75,8 +95,8 @@ export default function UserProfile() {
                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
               >
                 <Avatar className="w-24 h-24 md:w-32 md:h-32">
-                  <AvatarImage src="https://i.pravatar.cc/200?img=7" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage src={user.avatar ?? `https://i.pravatar.cc/200?u=${user.email}`} />
+                  <AvatarFallback>{user.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                 </Avatar>
               </motion.div>
 
@@ -86,41 +106,40 @@ export default function UserProfile() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h1 className="text-2xl md:text-3xl mb-2 font-bold text-foreground">Jane Developer</h1>
-                  <p className="text-slate-600 dark:text-zinc-400 mb-4">@janedev</p>
+                  <h1 className="text-2xl md:text-3xl mb-2 font-bold text-foreground">{user.name || "Developer"}</h1>
+                  <p className="text-slate-600 dark:text-zinc-400 mb-4">@{user.email?.split("@")[0] || "user"}</p>
 
                   <div className="flex justify-center md:justify-start gap-6 mb-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold">42</div>
+                      <div className="text-2xl font-bold">0</div>
                       <div className="text-sm text-slate-600 dark:text-zinc-400">Posts</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold">1.2k</div>
+                      <div className="text-2xl font-bold">0</div>
                       <div className="text-sm text-slate-600 dark:text-zinc-400">Followers</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold">8.5k</div>
+                      <div className="text-2xl font-bold">{user.karma || 0}</div>
                       <div className="text-sm text-slate-600 dark:text-zinc-400">Karma</div>
                     </div>
                   </div>
 
                   <p className="text-slate-700 dark:text-zinc-300 mb-4">
-                    Full-stack developer passionate about React, TypeScript, and
-                    building amazing user experiences. 🚀
+                    Welcome to DevShare! Start sharing your development journey with the community. 🚀
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-600 dark:text-zinc-400 mb-4">
                     <div className="flex items-center gap-1 justify-center md:justify-start">
                       <MapPin className="w-4 h-4" />
-                      <span>San Francisco, CA</span>
+                      <span>Global Dev Community</span>
                     </div>
                     <div className="flex items-center gap-1 justify-center md:justify-start">
                       <LinkIcon className="w-4 h-4" />
-                      <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">janedev.com</a>
+                      <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">devshare.dev</a>
                     </div>
                     <div className="flex items-center gap-1 justify-center md:justify-start">
                       <Calendar className="w-4 h-4" />
-                      <span>Joined January 2023</span>
+                      <span>Joined {joinedDate}</span>
                     </div>
                   </div>
 
