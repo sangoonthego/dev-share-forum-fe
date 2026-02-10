@@ -1,155 +1,115 @@
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+
 /**
- * Centralized Axios instance with interceptors
- * Handles JWT authentication, error handling, and request/response transformation
- * 
- * Pattern: Infrastructure Layer
- * Responsibility: HTTP communication, auth token management, error handling
+ * In-memory access token storage
+ * Refresh token is handled by httpOnly cookies (backend manages)
  */
+let accessToken: string | null = null;
 
-import axios, {
-  AxiosInstance,
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
-
-// Error response type guard
-interface AxiosErrorResponse {
-  success: false
-  error: {
-    code: string
-    message: string
-  }
+export function setAccessToken(token: string | null): void {
+  accessToken = token;
 }
 
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
+export function clearAccessToken(): void {
+  accessToken = null;
+}
+
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+  withCredentials: true, // Enable cookie handling for refresh_token
+});
+
 /**
- * Create a base Axios instance with default configuration
+ * Request Interceptor: Inject Authorization header with access token
  */
-const createApiClient = (): AxiosInstance => {
-  const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
-    timeout: 10000,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  /**
-   * REQUEST INTERCEPTOR
-   * Add JWT token to headers if available
-   */
-  instance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+let isRefreshing: boolean = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
+  config: InternalAxiosRequestConfig;
+}> = [];
 
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`
+function processQueue(error: AxiosError | null, token: string | null = null): void {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.config.headers.Authorization = `Bearer ${token}`;
+      prom.resolve(apiClient(prom.config));
+    }
+  });
+  failedQueue = [];
+}
+
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // Only retry on 401 for non-auth endpoints
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/login") &&
+      !originalRequest.url?.includes("/auth/register") &&
+      !originalRequest.url?.includes("/auth/refresh")
+    ) {
+      // Queue request if refresh is already in progress
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject, config: originalRequest });
+        });
       }
 
-      return config
-    },
-    (error: AxiosError) => {
-      return Promise.reject(error)
-    }
-  )
+      originalRequest._retry = true;
+      isRefreshing = true;
 
-  /**
-   * RESPONSE INTERCEPTOR
-   * Handle token refresh, errors, and response transformation
-   */
-  instance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      // Success: return response data
-      return response
-    },
-    (error: AxiosError<AxiosErrorResponse>) => {
-      // Handle 401 Unauthorized - Token expired
-      if (error.response?.status === 401) {
-        // Clear auth tokens
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('auth_token')
-          localStorage.removeItem('refresh_token')
-          // Redirect to login if needed
-          window.location.href = '/auth/login'
+      try {
+        // Trigger refresh (backend reads refresh_token from httpOnly cookie)
+        const response = await apiClient.post<{ access_token: string }>("/auth/refresh");
+        const { access_token } = response.data;
+
+        // Update in-memory access token
+        setAccessToken(access_token);
+
+        // Process queued requests with new token
+        processQueue(null, access_token);
+
+        // Retry original request
+        originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        // Refresh failed - clear session and redirect to login
+        processQueue(refreshError as AxiosError, null);
+        clearAccessToken();
+
+        // Client-side redirect
+        if (typeof window !== "undefined") {
+          window.location.href = "/auth/login?error=session_expired";
         }
-      }
 
-      // Handle 403 Forbidden
-      if (error.response?.status === 403) {
-        console.error('Access denied:', error.response.data)
-      }
-
-      // Handle 500+ Server errors
-      if (error.response?.status && error.response.status >= 500) {
-        console.error('Server error:', error.response.data)
-      }
-
-      return Promise.reject(error)
-    }
-  )
-
-  return instance
-}
-
-// Export singleton instance
-export const apiClient = createApiClient()
-
-/**
- * Helper function to handle API errors consistently
- */
-export const handleApiError = (error: unknown): string => {
-  if (axios.isAxiosError(error)) {
-    const response = error.response?.data as AxiosErrorResponse | undefined
-
-    if (response?.error?.message) {
-      return response.error.message
-    }
-
-    if (error.message) {
-      return error.message
-    }
-
-    return 'An unexpected error occurred'
-  }
-
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return 'An unexpected error occurred'
-}
-
-/**
- * Helper function to extract error details
- */
-export const getErrorDetails = (error: unknown): { code: string; message: string } => {
-  if (axios.isAxiosError(error)) {
-    const response = error.response?.data as AxiosErrorResponse | undefined
-
-    if (response?.error) {
-      return {
-        code: response.error.code,
-        message: response.error.message,
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
-    return {
-      code: `HTTP_${error.response?.status || 'UNKNOWN'}`,
-      message: error.message,
-    }
+    return Promise.reject(error);
   }
+);
 
-  if (error instanceof Error) {
-    return {
-      code: 'CLIENT_ERROR',
-      message: error.message,
-    }
-  }
-
-  return {
-    code: 'UNKNOWN_ERROR',
-    message: 'An unexpected error occurred',
-  }
-}
-
-export default apiClient
+export default apiClient;
