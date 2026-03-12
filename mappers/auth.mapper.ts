@@ -1,50 +1,9 @@
-export interface UserProfileResponse {
-  id: number;
-  email: string;
-  full_name: string | null;
-  phone: string | null;
-  profile_avatar: string | null;
-  role: string;
-  karma: number;
-  created_at: Date | string;
-  updated_at: Date | string;
-}
-
-export interface OAuthUserResponse {
-  id: number;
-  email: string;
-  full_name: string | null;
-  profile_avatar: string | null;
-  access_token: string;
-  refresh_token: string;
-}
-
-export interface LoginResponse {
-  access_token: string;
-}
-
-export interface RegisterResponse {
-  id: number;
-  email: string;
-  full_name: string | null;
-}
-
-export interface ChangePasswordResponse {
-  success: boolean;
-  message: string;
-}
-
-export interface User {
-  id: number;
-  email: string;
-  name: string | null; // Maps from full_name
-  phone: string | null;
-  avatar: string | null; // Maps from profile_avatar
-  role: string;
-  karma: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import {
+  UserProfileResponse,
+  OAuthUserResponse,
+  User,
+  ChangePasswordResponse,
+} from "@/types/auth";
 
 export function mapUserProfileResponse(data: UserProfileResponse): User {
   return {
