@@ -1,87 +1,71 @@
-/**
- * Authentication-related types
- * Backend response contracts for auth operations
- */
-
-/**
- * Auth Response from NestJS API
- * This is what the API returns
- */
-export interface AuthResponse {
-  id: string
-  email: string
-  username: string
-  firstName: string
-  lastName: string
-  avatar?: string
-  role: 'user' | 'moderator' | 'admin'
-  isVerified: boolean
-  createdAt: string
+export interface UserProfileResponse {
+  id: number;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
+  profile_avatar: string | null;
+  role: string;
+  karma: number;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
-/**
- * Login Request/Response
- */
-export interface LoginRequest {
-  email: string
-  password: string
+export interface OAuthUserResponse {
+  id: number;
+  email: string;
+  full_name: string | null;
+  profile_avatar: string | null;
+  access_token: string;
+  refresh_token: string;
+}
+
+export interface AuthTokenResponse {
+  access_token: string;
+  csrf_token?: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  avatar: string | null;
+  role: string;
+  karma: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface RegisterDto {
+  email: string;
+  password: string;
+  full_name?: string;
+  phone?: string;
+}
+
+export interface ChangePasswordDto {
+  current_password: string;
+  new_password: string;
+  new_password_confirm: string;
 }
 
 export interface LoginResponse {
-  user: AuthResponse
-  token: string
-  refreshToken: string
+  access_token: string;
+  csrf_token?: string;
 }
 
-/**
- * Signup Request
- */
-export interface SignupRequest {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  username: string
+export interface RegisterResponse {
+  id: number;
+  email: string;
+  full_name: string | null;
 }
 
-export interface SignupResponse {
-  user: AuthResponse
-  token: string
-  refreshToken: string
-}
-
-/**
- * Frontend Auth State
- * What the UI components actually use
- */
-export interface AuthUser {
-  id: string
-  email: string
-  name: string
-  username: string
-  avatar: string
-  role: 'user' | 'moderator' | 'admin'
-  isVerified: boolean
-}
-
-export interface AuthState {
-  user: AuthUser | null
-  token: string | null
-  refreshToken: string | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  error: string | null
-}
-
-export interface LoginCredentials {
-  email: string
-  password: string
-}
-
-export interface SignupData {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  username: string
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
 }
