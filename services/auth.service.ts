@@ -1,33 +1,17 @@
-import apiClient, { setAccessToken, clearAccessToken } from "@/lib/api-client";
+import apiClient, { setAccessToken, clearAccessToken, setCSRFToken, clearCSRFToken } from "@/lib/api-client";
+import { mapUserProfileResponse, mapOAuthUserResponse } from "@/mappers/auth.mapper";
 import {
-  mapUserProfileResponse,
+  LoginDto,
+  RegisterDto,
+  ChangePasswordDto,
+  AuthTokenResponse,
   User,
   UserProfileResponse,
   LoginResponse,
   RegisterResponse,
   ChangePasswordResponse,
-} from "@/mappers/auth.mapper";
-
-/**
- * Request DTOs (matching backend contracts)
- */
-interface LoginDto {
-  email: string;
-  password: string;
-}
-
-interface RegisterDto {
-  email: string;
-  password: string;
-  full_name?: string;
-  phone?: string;
-}
-
-interface ChangePasswordDto {
-  current_password: string;
-  new_password: string;
-  new_password_confirm: string;
-}
+  OAuthUserResponse,
+} from "@/types/auth";
 
 class AuthService {
   private readonly baseURL = "/auth";
@@ -41,25 +25,28 @@ class AuthService {
 
       return response.data;
     } catch (error) {
-      throw this.handleError(error, "Registration failed");
+      throw this.mapError(error, "Registration failed");
     }
   }
 
-  async login(dto: LoginDto): Promise<string> {
+  async login(dto: LoginDto): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>(
+      const response = await apiClient.post<AuthTokenResponse>(
         `${this.baseURL}/login`,
         dto
       );
 
-      const { access_token } = response.data;
+      const { access_token, csrf_token } = response.data;
 
-      // Store access token in memory (via api-client)
+      // Store tokens in the service layer - handles side effects
       setAccessToken(access_token);
+      if (csrf_token) {
+        setCSRFToken(csrf_token);
+      }
 
-      return access_token;
+      return { access_token, csrf_token };
     } catch (error) {
-      throw this.handleError(error, "Login failed");
+      throw this.mapError(error, "Login failed");
     }
   }
 
@@ -68,9 +55,9 @@ class AuthService {
       await apiClient.post(`${this.baseURL}/logout`);
     } catch (error) {
       console.error("Logout error:", error);
-      // Continue clearing local state even if API call fails
     } finally {
       clearAccessToken();
+      clearCSRFToken();
     }
   }
 
@@ -82,8 +69,7 @@ class AuthService {
 
       return mapUserProfileResponse(response.data);
     } catch (error) {
-      // If 401, session expired - api-client interceptor handles refresh
-      throw this.handleError(error, "Failed to fetch user profile");
+      throw this.mapError(error, "Failed to fetch user profile");
     }
   }
 
@@ -96,23 +82,37 @@ class AuthService {
 
       return response.data;
     } catch (error) {
-      throw this.handleError(error, "Password change failed");
+      throw this.mapError(error, "Password change failed");
     }
   }
 
-  private handleError(error: unknown, defaultMessage: string): never {
+  private mapError(error: unknown, defaultMessage: string): never {
     if (error instanceof Error) {
-      // Axios error
       if ("response" in error && typeof error.response === "object" && error.response !== null) {
         const response = error.response as any;
-        const message = response.data?.message || response.data?.error || defaultMessage;
-        throw new Error(message);
+        const errorCode = response.data?.error_code;
+        const userMessage = this.mapErrorCodeToMessage(errorCode) || defaultMessage;
+        throw new Error(userMessage);
       }
-      // Generic error
       throw new Error(error.message || defaultMessage);
     }
-    // Unknown error
     throw new Error(defaultMessage);
+  }
+
+  private mapErrorCodeToMessage(code: string | undefined): string | null {
+    const errorMap: Record<string, string> = {
+      'AUTH_001': 'Invalid email or password. Please try again.',
+      'AUTH_002': 'This email is already registered. Use login instead.',
+      'AUTH_003': 'Unable to refresh session. Please login again.',
+      'AUTH_004': 'Your session has expired. Please login again.',
+      'AUTH_005': 'Too many login attempts. Try again in a few minutes.',
+      'AUTH_006': 'Security verification failed. Please try again.',
+      'AUTH_007': 'Your session was invalidated. Please login again.',
+      'AUTH_008': 'Session security issue detected. Please login again.',
+      'AUTH_009': 'OAuth login failed. Please try again with another method.',
+      'AUTH_010': 'Password does not meet security requirements.',
+    };
+    return code ? errorMap[code] : null;
   }
 }
 
