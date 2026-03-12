@@ -1,10 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
-/**
- * In-memory access token storage
- * Refresh token is handled by httpOnly cookies (backend manages)
- */
 let accessToken: string | null = null;
+let csrfToken: string | null = null;
 
 export function setAccessToken(token: string | null): void {
   accessToken = token;
@@ -18,19 +15,43 @@ export function clearAccessToken(): void {
   accessToken = null;
 }
 
+export function setCSRFToken(token: string | null): void {
+  csrfToken = token;
+}
+
+export function getCSRFToken(): string | null {
+  return csrfToken;
+}
+
+export function clearCSRFToken(): void {
+  csrfToken = null;
+}
+
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
-  withCredentials: true, // Enable cookie handling for refresh_token
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1",
+  withCredentials: true,
 });
 
-/**
- * Request Interceptor: Inject Authorization header with access token
- */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+
+    if (csrfToken) {
+      const method = config.method?.toUpperCase() ?? "";
+      if (["POST", "PUT", "DELETE", "PATCH"].includes(method)) {
+        config.headers["X-CSRF-Token"] = csrfToken;
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      const traceId = sessionStorage.getItem("trace_id") || "";
+      if (traceId) {
+        config.headers["X-Trace-ID"] = traceId;
+      }
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -56,11 +77,17 @@ function processQueue(error: AxiosError | null, token: string | null = null): vo
 }
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    const backendTraceId = response.headers["x-trace-id"];
+    if (backendTraceId && typeof window !== "undefined") {
+      sessionStorage.setItem("trace_id", backendTraceId);
+    }
+
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Only retry on 401 for non-auth endpoints
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -68,7 +95,6 @@ apiClient.interceptors.response.use(
       !originalRequest.url?.includes("/auth/register") &&
       !originalRequest.url?.includes("/auth/refresh")
     ) {
-      // Queue request if refresh is already in progress
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject, config: originalRequest });
@@ -79,25 +105,26 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Trigger refresh (backend reads refresh_token from httpOnly cookie)
-        const response = await apiClient.post<{ access_token: string }>("/auth/refresh");
-        const { access_token } = response.data;
+        const response = await apiClient.post<{
+          access_token: string;
+          csrf_token: string;
+        }>("/auth/refresh");
+        const { access_token, csrf_token: newCsrfToken } = response.data;
 
-        // Update in-memory access token
         setAccessToken(access_token);
+        if (newCsrfToken) {
+          setCSRFToken(newCsrfToken);
+        }
 
-        // Process queued requests with new token
         processQueue(null, access_token);
 
-        // Retry original request
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed - clear session and redirect to login
         processQueue(refreshError as AxiosError, null);
         clearAccessToken();
+        clearCSRFToken();
 
-        // Client-side redirect
         if (typeof window !== "undefined") {
           window.location.href = "/auth/login?error=session_expired";
         }
