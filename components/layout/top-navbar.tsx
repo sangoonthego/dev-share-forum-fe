@@ -18,7 +18,8 @@ import { useAuth } from "@/hooks/useAuth"
 
 export function TopNavbar() {
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  // 1. Extract isLoading from useAuth
+  const { user, logout, isLoading } = useAuth()
 
   const navItems = [
     { icon: LayoutGrid, label: "Event", href: "/events" },
@@ -75,68 +76,85 @@ export function TopNavbar() {
             <Search className="h-5 w-5" />
           </Button>
         </Link>
-        
-        <Link href="/notifications">
-          <div className="relative">
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 border-2 border-card" />
-          </div>
-        </Link>
 
-        {/* Dropdown Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="h-9 w-9 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all">
-              <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
-              <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          
-          <DropdownMenuContent 
-            className="w-64 mt-2 bg-[#1a1b26] border-[#2f3146] text-slate-200 p-0 overflow-hidden rounded-xl shadow-2xl" 
-            align="end"
-          >
-            {/* Header nằm ngang (Horizontal) */}
-            <div className="bg-[#24263a] p-4 flex flex-row items-center gap-4 border-b border-[#2f3146]">
-              <Avatar className="h-12 w-12 ring-2 ring-primary/20 flex-shrink-0">
-                <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
-                <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{user?.name || "User"}</p>
-                <p className="text-xs text-slate-400 mt-1 truncate">{user?.email || "email@example.com"}</p>
+        {/* Render Logic based on Auth State */}
+        {isLoading ? (
+          // SKELETON STATE: Show while fetching auth status
+          <>
+            <div className="h-9 w-9 rounded-full bg-slate-700/50 animate-pulse ml-2" />
+          </>
+        ) : user ? (
+          // AUTHENTICATED STATE: Show Bell and User Avatar Dropdown
+          <>
+            <Link href="/notifications">
+              <div className="relative">
+                <Button variant="ghost" size="icon" className="text-muted-foreground">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 border-2 border-card" />
               </div>
-            </div>
+            </Link>
 
-            <div className="p-2">
-              <DropdownMenuItem asChild className="focus:bg-[#2f3146] focus:text-white cursor-pointer py-2.5 px-3 rounded-lg mt-1 transition-colors">
-                <Link href="/profile" className="flex w-full items-center">
-                  <User className="mr-2 h-4 w-4 text-slate-400" />
-                  <span className="text-sm">View Profile</span>
-                </Link>
-              </DropdownMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="h-9 w-9 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all">
+                  <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
+                  <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
 
-              <DropdownMenuItem asChild className="focus:bg-[#2f3146] focus:text-white cursor-pointer py-2.5 px-3 rounded-lg mt-1 transition-colors">
-                <Link href="/settings" className="flex w-full items-center">
-                  <Settings className="mr-2 h-4 w-4 text-slate-400" />
-                  <span className="text-sm">Settings</span>
-                </Link>
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-[#2f3146] my-2" />
-
-              <DropdownMenuItem 
-                onClick={handleLogout}
-                className="focus:bg-red-500/10 focus:text-red-400 text-red-400 cursor-pointer py-2.5 px-3 rounded-lg mb-1 transition-colors"
+              <DropdownMenuContent
+                className="w-64 mt-2 bg-[#1a1b26] border-[#2f3146] text-slate-200 p-0 overflow-hidden rounded-xl shadow-2xl"
+                align="end"
               >
-                <LogOut className="mr-4 h-4 w-4" />
-                <span className="text-sm">Log out</span>
-              </DropdownMenuItem>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                {/* Header nằm ngang (Horizontal) */}
+                <div className="bg-[#24263a] p-4 flex flex-row items-center gap-4 border-b border-[#2f3146]">
+                  <Avatar className="h-12 w-12 ring-2 ring-primary/20 flex-shrink-0">
+                    <AvatarImage src={user?.avatar ?? `https://i.pravatar.cc/150?u=${user?.email}`} />
+                    <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{user?.name || "User"}</p>
+                    <p className="text-xs text-slate-400 mt-1 truncate">{user?.email || "email@example.com"}</p>
+                  </div>
+                </div>
+
+                <div className="p-2">
+                  <DropdownMenuItem asChild className="focus:bg-[#2f3146] focus:text-white cursor-pointer py-2.5 px-3 rounded-lg mt-1 transition-colors">
+                    <Link href="/profile" className="flex w-full items-center">
+                      <User className="mr-2 h-4 w-4 text-slate-400" />
+                      <span className="text-sm">View Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="focus:bg-[#2f3146] focus:text-white cursor-pointer py-2.5 px-3 rounded-lg mt-1 transition-colors">
+                    <Link href="/settings" className="flex w-full items-center">
+                      <Settings className="mr-2 h-4 w-4 text-slate-400" />
+                      <span className="text-sm">Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator className="bg-[#2f3146] my-2" />
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="focus:bg-red-500/10 focus:text-red-400 text-red-400 cursor-pointer py-2.5 px-3 rounded-lg mb-1 transition-colors"
+                  >
+                    <LogOut className="mr-4 h-4 w-4" />
+                    <span className="text-sm">Log out</span>
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          // UNAUTHENTICATED STATE: Show Login Button
+          <Link href="/auth/login" className="ml-2">
+            <Button size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold">
+              Sign In
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   )

@@ -4,9 +4,10 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { AIChatbotWidget } from "@/components/agentic/ai-chatbot-widget"
-import { MagicBackground } from "@/components/layout/magic-background" 
+import { MagicBackground } from "@/components/layout/magic-background"
 import "./globals.css"
 import { StarBackground } from "@/components/layout/star-background"
+import { AuthProvider } from "@/contexts/AuthContext"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -49,17 +50,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased selection:bg-primary/30">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {/* */}
-          {/* <MagicBackground /> */}
-          { <StarBackground />}
-          {/**/}
-          <main className="relative z-10">
-            {children}
-          </main>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {/* */}
+            {/* <MagicBackground /> */}
+            {<StarBackground />}
+            {/**/}
+            <main className="relative z-10">
+              {children}
+            </main>
 
-          <AIChatbotWidget />
-        </ThemeProvider>
+            <AIChatbotWidget />
+          </ThemeProvider>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

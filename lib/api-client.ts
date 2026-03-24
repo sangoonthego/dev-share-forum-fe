@@ -88,12 +88,20 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+    if (error.response?.status === 401 && originalRequest.url?.includes("/auth/refresh")) {
+      clearAccessToken();
+      clearCSRFToken();
+      if (typeof window !== "undefined" && !window.location.pathname.includes('/auth/login')) {
+        window.location.href = "/auth/login?error=session_expired";
+      }
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/login") &&
-      !originalRequest.url?.includes("/auth/register") &&
-      !originalRequest.url?.includes("/auth/refresh")
+      !originalRequest.url?.includes("/auth/register")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -125,7 +133,7 @@ apiClient.interceptors.response.use(
         clearAccessToken();
         clearCSRFToken();
 
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && !window.location.pathname.includes('/auth/login')) {
           window.location.href = "/auth/login?error=session_expired";
         }
 

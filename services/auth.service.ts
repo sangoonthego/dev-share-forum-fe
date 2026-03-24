@@ -73,6 +73,26 @@ class AuthService {
     }
   }
 
+  async silentRefresh(): Promise<AuthTokenResponse> {
+    try {
+      const response = await apiClient.post<AuthTokenResponse>(
+        `${this.baseURL}/refresh`
+      );
+
+      const { access_token, csrf_token } = response.data;
+      setAccessToken(access_token);
+      if (csrf_token) {
+        setCSRFToken(csrf_token);
+      }
+
+      return response.data;
+    } catch (error) {
+      clearAccessToken();
+      clearCSRFToken();
+      throw this.mapError(error, "Silent refresh failed");
+    }
+  }
+
   async changePassword(dto: ChangePasswordDto): Promise<ChangePasswordResponse> {
     try {
       const response = await apiClient.post<ChangePasswordResponse>(
@@ -122,6 +142,7 @@ export const register = authService.register.bind(authService);
 export const login = authService.login.bind(authService);
 export const logout = authService.logout.bind(authService);
 export const getMe = authService.getMe.bind(authService);
+export const silentRefresh = authService.silentRefresh.bind(authService);
 export const changePassword = authService.changePassword.bind(authService);
 
 export default authService;
