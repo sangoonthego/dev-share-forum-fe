@@ -1,7 +1,8 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from "axios";
 
 let accessToken: string | null = null;
 let csrfToken: string | null = null;
+let refreshTokenRequest: Promise<{ access_token: string; csrf_token: string }> | null = null;
 
 export function setAccessToken(token: string | null): void {
   accessToken = token;
@@ -57,37 +58,18 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-let isRefreshing: boolean = false;
-let failedQueue: Array<{
-  resolve: (value?: unknown) => void;
-  reject: (reason?: any) => void;
-  config: InternalAxiosRequestConfig;
-}> = [];
-
-function processQueue(error: AxiosError | null, token: string | null = null): void {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else if (token) {
-      prom.config.headers.Authorization = `Bearer ${token}`;
-      prom.resolve(apiClient(prom.config));
-    }
-  });
-  failedQueue = [];
-}
-
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     const backendTraceId = response.headers["x-trace-id"];
     if (backendTraceId && typeof window !== "undefined") {
       sessionStorage.setItem("trace_id", backendTraceId);
     }
-
     return response;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+    // Explicit manual logout or invalid refresh token forces session clear
     if (error.response?.status === 401 && originalRequest.url?.includes("/auth/refresh")) {
       clearAccessToken();
       clearCSRFToken();
@@ -103,43 +85,56 @@ apiClient.interceptors.response.use(
       !originalRequest.url?.includes("/auth/login") &&
       !originalRequest.url?.includes("/auth/register")
     ) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject, config: originalRequest });
+      originalRequest._retry = true;
+
+      if (!refreshTokenRequest) {
+        // Create the promise lock with retry logic
+        refreshTokenRequest = (async () => {
+          let retryCount = 0;
+          const maxRetries = 2;
+
+          while (retryCount <= maxRetries) {
+            try {
+              const response = await axios.post<{ access_token: string; csrf_token: string }>(
+                `${apiClient.defaults.baseURL}/auth/refresh`,
+                {},
+                { withCredentials: true }
+              );
+              return response.data;
+            } catch (refreshError: any) {
+              if (refreshError.response?.status === 429 && retryCount < maxRetries) {
+                // Exponential Backoff
+                const backoffDelay = Math.pow(2, retryCount) * 1000;
+                await new Promise((resolve) => setTimeout(resolve, backoffDelay));
+                retryCount++;
+              } else {
+                throw refreshError;
+              }
+            }
+          }
+          throw new Error('Max retries reached');
+        })().finally(() => {
+          refreshTokenRequest = null;
         });
       }
 
-      originalRequest._retry = true;
-      isRefreshing = true;
-
       try {
-        const response = await apiClient.post<{
-          access_token: string;
-          csrf_token: string;
-        }>("/auth/refresh");
-        const { access_token, csrf_token: newCsrfToken } = response.data;
+        // Tất cả các request bị kẹt lại sẽ cùng chờ ở đây
+        const { access_token, csrf_token: newCsrfToken } = await refreshTokenRequest;
 
         setAccessToken(access_token);
-        if (newCsrfToken) {
-          setCSRFToken(newCsrfToken);
-        }
-
-        processQueue(null, access_token);
+        if (newCsrfToken) setCSRFToken(newCsrfToken);
 
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return apiClient(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError as AxiosError, null);
+      } catch (refreshLockError: any) {
         clearAccessToken();
         clearCSRFToken();
-
         if (typeof window !== "undefined" && !window.location.pathname.includes('/auth/login')) {
-          window.location.href = "/auth/login?error=session_expired";
+          const isRateLimited = refreshLockError?.response?.status === 429;
+          window.location.href = `/auth/login?error=${isRateLimited ? 'rate_limited' : 'session_expired'}`;
         }
-
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+        return Promise.reject(refreshLockError);
       }
     }
 
